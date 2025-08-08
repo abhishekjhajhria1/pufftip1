@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Box, VStack, Button, Heading } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
-import { px } from "framer-motion";
 
 // Dynamically import your Framer Motion visual themes
 const CoffeeScene = dynamic(() => import("../themes/themeVisuals/coffee"), { ssr: false });
