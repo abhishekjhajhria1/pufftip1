@@ -1,35 +1,70 @@
 import { useRouter } from "next/router";
-import { Box, Flex, Avatar, Heading, Text, Button, Spinner, Center } from "@chakra-ui/react";
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useChainId } from "wagmi";
+import { Box, Flex, Avatar, Heading, Text, Button, Spinner, Center, Input, Progress, Icon, Link as ChakraLink } from "@chakra-ui/react";
+import { useWriteContract, useWaitForTransactionReceipt, useChainId, useBalance } from "wagmi";
 import { parseEther } from "viem";
 import { useState, useEffect } from "react";
 import { PUFFTIP_ABI } from "@/utils/abi";
 import { getPuffTipAddress } from "@/utils/contract";
 import { toaster } from "@/components/ui/toaster";
-import CoffeeProfileScene from "../../themes/profileVisuals/coffee";
-// Import other themes as needed or use a default
+import Background from "@/components/visuals/Background";
+import { motion } from "framer-motion";
+import { FaTwitter, FaGithub, FaGlobe } from "react-icons/fa";
+
+const MotionBox = motion(Box);
 
 export default function ProfilePage() {
   const router = useRouter();
   const { username: addressParam } = router.query;
-  // Map "username" param to address because file is named [username].tsx but we route /u/0xAddress
   const accountAddress = typeof addressParam === "string" ? addressParam as `0x${string}` : undefined;
 
   const chainId = useChainId();
   const contractAddress = getPuffTipAddress(chainId);
 
+  // Fetch balance for Goal Progress
+  const { data: balance } = useBalance({ address: accountAddress });
+
   const [tipAmount, setTipAmount] = useState("0.01");
   const [message, setMessage] = useState("Great content!");
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
-  const { data: profile, isLoading: isLoadingProfile } = useReadContract({
-    address: contractAddress,
-    abi: PUFFTIP_ABI,
-    functionName: "profiles",
-    args: accountAddress ? [accountAddress] : undefined,
-    query: {
-      enabled: !!accountAddress
-    }
+  // Profile State
+  interface ProfileState {
+    username: string;
+    bio: string;
+    theme: "cyberpunk" | "coffee" | "pixel" | "default";
+    socials?: { twitter?: string; github?: string; website?: string };
+    goal?: { title: string; amount: number };
+  }
+
+  const [profileData, setProfileData] = useState<ProfileState>({
+    username: "Loading...",
+    bio: "...",
+    theme: "default"
   });
+
+  // Fetch from API
+  useEffect(() => {
+    if (!accountAddress) return;
+    fetch(`/api/u/${accountAddress}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setProfileData({
+            username: data.username || "Anon",
+            bio: data.bio || "Just another cypherpunk.",
+            theme: data.theme || "default",
+            socials: data.socials,
+            goal: data.goal
+          });
+        }
+        setIsLoadingProfile(false);
+      })
+      .catch(e => {
+        console.error(e);
+        setIsLoadingProfile(false);
+      });
+  }, [accountAddress]);
+
 
   const { data: hash, writeContract, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
@@ -56,95 +91,136 @@ export default function ProfilePage() {
     }
   }, [isConfirmed]);
 
+  // Goal Calculation
+  const currentEth = balance ? parseFloat(balance.formatted) : 0;
+  const goalTarget = profileData.goal ? profileData.goal.amount : 1;
+  const progressPercent = Math.min((currentEth / goalTarget) * 100, 100);
+
   if (!router.isReady || isLoadingProfile) {
-    return <Center minH="100vh" bg="gray.900"><Spinner size="xl" color="white" /></Center>;
-  }
-
-  // Contract returns [metadataURI, exists]
-  const exists = profile ? profile[1] : false;
-  const metadataURI = profile ? profile[0] : "";
-
-  // Parser for metadata. For V1 prototype, assuming metadataURI implies theme content or just default.
-  // Real implementation: Fetch JSON from IPFS using metadataURI.
-  // For now, we'll try to parse JSON from the URI string if it's a raw JSON string for demo, 
-  // or fallback to defaults.
-
-  let profileData = { username: "User", bio: "Crypto Tipper", theme: "coffee" };
-  try {
-    if (metadataURI && metadataURI.startsWith("{")) {
-      profileData = JSON.parse(metadataURI);
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  if (!exists) {
     return (
-      <Box p={10} textAlign="center" bg="gray.900" minH="100vh" color="white" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-        <Heading size="lg">User Not Found</Heading>
-        <Text mt={4}>This address has not created a PuffTip profile yet.</Text>
-        <Text fontSize="sm" mt={2} color="gray.500">{accountAddress}</Text>
-      </Box>
+      <Background theme="default">
+        <Center minH="100vh"><Spinner size="xl" color="white" /></Center>
+      </Background>
     );
   }
 
   return (
-    <Box minH="100vh" position="relative" overflow="hidden" bg="gray.900">
-      {/* Background Visual */}
-      <Box position="absolute" inset={0} zIndex={0} opacity={0.5}>
-        <CoffeeProfileScene />
-      </Box>
-
+    <Background theme={profileData.theme}>
       <Flex
-        direction={["column", "row"]}
+        direction="column"
         align="center"
         justify="center"
         minH="100vh"
-        position="relative"
-        zIndex={2}
         px={4}
       >
-        <Box
-          bg="rgba(0,0,0,0.7)"
-          borderRadius="2xl"
+        <MotionBox
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, type: "spring" }}
+          bg="rgba(0,0,0,0.6)"
+          borderRadius="3xl"
           p={10}
           maxW="500px"
           w="full"
           border="1px solid"
-          borderColor="gray.700"
-          backdropFilter="blur(10px)"
+          borderColor="brand.purple"
+          backdropFilter="blur(20px)"
+          boxShadow="0 0 40px rgba(0,0,0,0.5)"
         >
+          {/* Header Section */}
           <Flex align="center" mb={6} direction="column">
-            <Avatar.Root size="2xl" mb={4}>
-              <Avatar.Fallback name={profileData.username || "User"} />
-              <Avatar.Image src="" />
-            </Avatar.Root>
-            <Heading size="xl" color="white" mb={2}>{profileData.username || "Anon"}</Heading>
-            <Text color="gray.300">{profileData.bio}</Text>
+            <MotionBox
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+            >
+              <Avatar.Root size="2xl" mb={4} border="4px solid" borderColor="brand.pink">
+                <Avatar.Fallback name={profileData.username} bg="brand.purple" color="white" fontSize="3xl" />
+                <Avatar.Image src="" />
+              </Avatar.Root>
+            </MotionBox>
+
+            <Heading size="3xl" color="white" mb={2} fontFamily="heading" textShadow="0 0 10px rgba(255,255,255,0.5)">
+              {profileData.username}
+            </Heading>
+            <Text color="brand.cyan" fontFamily="subheading" fontSize="lg" textAlign="center">{profileData.bio}</Text>
+
+            {/* Social Icons */}
+            {profileData.socials && (
+              <Flex gap={4} mt={4}>
+                {profileData.socials.twitter && (
+                  <ChakraLink href={`https://twitter.com/${profileData.socials.twitter}`} target="_blank" rel="noopener noreferrer" color="gray.400" _hover={{ color: "twitter.400", transform: "scale(1.2)" }}>
+                    <Icon as={FaTwitter} boxSize={6} />
+                  </ChakraLink>
+                )}
+                {profileData.socials.github && (
+                  <ChakraLink href={`https://github.com/${profileData.socials.github}`} target="_blank" rel="noopener noreferrer" color="gray.400" _hover={{ color: "white", transform: "scale(1.2)" }}>
+                    <Icon as={FaGithub} boxSize={6} />
+                  </ChakraLink>
+                )}
+                {profileData.socials.website && (
+                  <ChakraLink href={`https://${profileData.socials.website}`} target="_blank" rel="noopener noreferrer" color="gray.400" _hover={{ color: "brand.pink", transform: "scale(1.2)" }}>
+                    <Icon as={FaGlobe} boxSize={6} />
+                  </ChakraLink>
+                )}
+              </Flex>
+            )}
           </Flex>
 
+          {/* Goal Section */}
+          {profileData.goal && (
+            <MotionBox
+              mb={8}
+              bg="rgba(255,255,255,0.1)"
+              p={4}
+              borderRadius="xl"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Flex justify="space-between" mb={2} color="brand.yellow" fontFamily="heading" fontSize="sm">
+                <Text>{profileData.goal.title}</Text>
+                <Text>{currentEth.toFixed(2)} / {profileData.goal.amount} ETH</Text>
+              </Flex>
+              <Progress.Root value={progressPercent} size="sm" colorScheme="pink" borderRadius="full">
+                <Progress.Track bg="rgba(0,0,0,0.5)">
+                  <Progress.Range />
+                </Progress.Track>
+              </Progress.Root>
+            </MotionBox>
+          )}
+
+          {/* Tipping Section */}
           <Box>
-            <Text color="gray.400" mb={2} fontSize="sm">Leave a message</Text>
-            <Box mb={4}>
-              <input
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: '#2D3748', border: '1px solid #4A5568', color: 'white', outline: 'none' }}
+            <Text color="gray.400" mb={2} fontSize="sm" fontFamily="body">LEAVE A MESSAGE</Text>
+            <Box mb={6}>
+              <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Say something nice..."
+                bg="rgba(255,255,255,0.1)"
+                border="none"
+                color="white"
+                _focus={{ boxShadow: "0 0 0 2px #FF0080" }}
+                p={6}
+                fontSize="lg"
+                borderRadius="xl"
               />
             </Box>
 
-            <Flex gap={2} mb={6}>
+            <Flex gap={3} mb={8} justify="center">
               {["0.001", "0.01", "0.05"].map(amt => (
                 <Button
                   key={amt}
-                  size="sm"
+                  size="md"
                   variant="outline"
-                  colorScheme="whiteAlpha"
                   onClick={() => setTipAmount(amt)}
-                  bg={tipAmount === amt ? "whiteAlpha.200" : "transparent"}
-                  borderColor="gray.600"
+                  bg={tipAmount === amt ? "brand.pink" : "transparent"}
+                  borderColor="brand.pink"
                   color="white"
+                  borderRadius="xl"
+                  _hover={{ bg: "brand.pink", transform: "translateY(-2px)" }}
+                  fontFamily="monospace"
                 >
                   {amt} ETH
                 </Button>
@@ -152,20 +228,28 @@ export default function ProfilePage() {
             </Flex>
 
             <Button
-              colorScheme="pink"
-              size="lg"
+              size="2xl"
               width="full"
               onClick={handleTip}
               loading={isPending || isConfirming}
-              loadingText="Sending..."
-              bgGradient="linear(to-r, pink.400, purple.500)"
-              _hover={{ bgGradient: "linear(to-r, pink.500, purple.600)" }}
+              loadingText="SENDING..."
+              bgGradient="linear(to-r, brand.pink, brand.purple)"
+              _hover={{
+                bgGradient: "linear(to-r, brand.yellow, brand.pink)",
+                transform: "scale(1.02)",
+                boxShadow: "0 0 20px #FF0080"
+              }}
+              color="white"
+              borderRadius="full"
+              fontFamily="heading"
+              fontSize="2xl"
+              boxShadow="0 4px 15px rgba(0,0,0,0.3)"
             >
-              Send Tip ({tipAmount} ETH)
+              SEND TIP ({tipAmount} ETH)
             </Button>
           </Box>
-        </Box>
+        </MotionBox>
       </Flex>
-    </Box>
+    </Background>
   );
 }

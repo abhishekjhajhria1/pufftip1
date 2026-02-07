@@ -20,6 +20,11 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { config } from '@/config/wagmi';
 import '@rainbow-me/rainbowkit/styles.css';
 
+// Fonts
+import "@fontsource/bangers";
+import "@fontsource/fredoka";
+import "@fontsource/outfit";
+
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
