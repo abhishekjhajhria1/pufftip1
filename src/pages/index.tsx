@@ -1,227 +1,123 @@
-import { Box, VStack, Text, Flex, Heading, Grid, Accordion, Badge } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { Button } from "@chakra-ui/react";
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
-import { useEffect, useState } from 'react';
-import Background from "@/components/visuals/Background";
+import { Box, VStack, Heading, Text, Button, Container, Grid, GridItem, Spinner } from "@chakra-ui/react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-const MotionBox = motion(Box);
-const MotionText = motion(Text);
+interface Stats {
+  totalTipsCount: number;
+  totalVolumeSol: string;
+  platformFeeCollected: string;
+  uniqueDonors: number;
+  uniqueCreators: number;
+  premiumUsersCount: number;
+}
 
 export default function Home() {
-  const { isConnected } = useAccount();
-  const [mounted, setMounted] = useState(false);
+  const { connected } = useWallet();
+  const router = useRouter();
+  
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
   }, []);
 
+  const handleRegister = () => {
+    if (!connected) {
+      return;
+    }
+    router.push("/register");
+  };
+
+  const handleSupport = () => {
+    router.push("/u/demo");
+  };
+
   return (
-    <Background theme="cyberpunk">
-      <Box color="white" minH="100vh">
-        {/* Navbar */}
-        <Flex
-          position="fixed"
-          top={0} left={0} right={0}
-          p={6}
-          justify="space-between"
-          align="center"
-          zIndex={100}
-          bgGradient="linear(to-b, rgba(0,0,0,0.8), transparent)"
-          backdropFilter="blur(5px)"
-        >
-          <Heading
-            size="2xl"
-            fontFamily="heading"
-            color="brand.cyan"
-            textShadow="0 0 10px #00BFFF"
-            style={{ letterSpacing: '2px' }}
-          >
-            PUFFTIP
-          </Heading>
-          <ConnectButton />
-        </Flex>
+    <Container maxW="container.lg" py={20}>
+      <VStack gap={12} alignItems="center">
+        <Heading as="h1" size="2xl" textAlign="center">
+          Welcome to PuffTip
+        </Heading>
+        <Text fontSize="lg" color="gray.600" textAlign="center" maxW="600px">
+          The easiest way for creators to receive tips in Solana along with messages from their supporters.
+        </Text>
+        
+        <Box mb={8}>
+          <WalletMultiButton />
+        </Box>
 
-        {/* Hero */}
-        <VStack
-          minH="100vh"
-          justify="center"
-          align="center"
-          textAlign="center"
-          gap={8}
-          px={4}
-          pt={20}
-        >
-          <MotionBox
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, type: "spring" }}
-          >
-            <Badge colorScheme="purple" mb={4} fontSize="lg" px={4} py={1} borderRadius="full">
-              WEB3 TIPPING FOR EVERYONE
-            </Badge>
-            <Heading
-              size="6xl"
-              fontFamily="heading"
-              lineHeight="shorter"
-              bgGradient="linear(to-r, brand.pink, brand.yellow)"
-              bgClip="text"
-              filter="drop-shadow(0 0 5px rgba(255,0,128,0.5))"
-            >
-              LEVEL UP YOUR <br /> CREATIVE INCOME
+        {connected ? (
+          <VStack gap={4} maxW="400px" w="full">
+            <Heading as="h2" size="md">
+              Get Started
             </Heading>
-          </MotionBox>
-
-          <MotionText
-            fontSize="2xl"
-            color="gray.300"
-            maxW="700px"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            fontFamily="subheading"
-          >
-            Streamers, Artists, Devs. Receive ETH tips directly.
-            <br />
-            No middleman. <Text as="span" color="brand.yellow">Instant Payouts.</Text> Zero platform risk.
-          </MotionText>
-
-          <MotionBox
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            {mounted && isConnected ? (
-              <Link href="/dashboard" passHref>
-                <Button
-                  size="2xl"
-                  bg="brand.pink"
-                  color="white"
-                  fontFamily="heading"
-                  fontSize="3xl"
-                  px={12}
-                  py={8}
-                  borderRadius="full"
-                  _hover={{
-                    transform: "scale(1.1) rotate(-2deg)",
-                    boxShadow: "0 0 30px #FF0080"
-                  }}
-                  boxShadow="0 0 15px #FF0080"
-                >
-                  GO TO DASHBOARD 🚀
-                </Button>
-              </Link>
-            ) : (
-              <Box
-                p={6}
-                bg="rgba(0,0,0,0.6)"
-                borderRadius="xl"
-                border="1px solid"
-                borderColor="brand.purple"
-                backdropFilter="blur(10px)"
-              >
-                <Text fontSize="xl" fontFamily="heading" mb={2} color="brand.cyan">Connect Wallet to Start</Text>
-                <Text fontSize="sm" color="gray.400">(Metamask, Rainbow, etc.)</Text>
-              </Box>
-            )}
-          </MotionBox>
-        </VStack>
-
-        {/* Features / Value Prop */}
-        <Box bg="blackAlpha.800" py={24} position="relative" zIndex={2}>
-          <VStack gap={16} maxW="1200px" mx="auto" px={4}>
-            <Heading textAlign="center" size="3xl" color="brand.yellow" fontFamily="heading">WHY PUFFTIP?</Heading>
-
-            <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={10} w="full">
-              {[
-                { title: "真正 Instant", desc: "Tips go directly to your wallet. No 'Net-30' payout delays.", icon: "⚡" },
-                { title: "Zero De-Platforming", desc: "Your page lives on the blockchain. No one can ban your income.", icon: "🛡️" },
-                { title: "Fun & Anime", desc: "Rich aesthetics, overlays, and themes that vibe with your community.", icon: "✨" }
-              ].map((feature, i) => (
-                <MotionBox
-                  key={i}
-                  whileHover={{ y: -10, borderColor: "#00BFFF" }}
-                  p={8}
-                  bg="rgba(255,255,255,0.03)"
-                  border="1px solid"
-                  borderColor="whiteAlpha.200"
-                  borderRadius="2xl"
-                  textAlign="left"
-                >
-                  <Text fontSize="5xl" mb={4}>{feature.icon}</Text>
-                  <Heading size="lg" mb={3} color="white">{feature.title}</Heading>
-                  <Text color="gray.400" fontSize="lg">{feature.desc}</Text>
-                </MotionBox>
-              ))}
-            </Grid>
+            <Button w="full" colorScheme="purple" size="lg" onClick={handleRegister}>
+              Register as Creator
+            </Button>
+            <Button w="full" colorScheme="blue" variant="outline" size="lg" onClick={handleSupport}>
+              Become a Supporter
+            </Button>
           </VStack>
-        </Box>
+        ) : (
+          <Text color="gray.500">Connect your wallet to get started</Text>
+        )}
 
-        {/* How It Works */}
-        <Box bg="brand.dark" py={24} position="relative" zIndex={2}>
-          <Heading textAlign="center" size="3xl" mb={16} color="brand.pink" fontFamily="heading">HOW IT WORKS</Heading>
-
-          <Grid
-            templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
-            gap={8}
-            maxW="1200px"
-            mx="auto"
-            px={4}
-          >
-            {[
-              { emoji: "🔗", title: "Connect", desc: "Link your ETH wallet. No signups." },
-              { emoji: "🎨", title: "Customize", desc: "Set your Theme, Bio, Socials & Goal." },
-              { emoji: "💸", title: "Receive", desc: "Share your link or use the Overlay." }
-            ].map((item, i) => (
-              <MotionBox
-                key={i}
-                whileHover={{ scale: 1.05 }}
-                p={8}
-                bg="card"
-                border="1px solid"
-                borderColor="brand.purple"
-                borderRadius="2xl"
-                textAlign="center"
-              >
-                <Text fontSize="6xl" mb={4}>{item.emoji}</Text>
-                <Heading size="xl" mb={2} color="brand.cyan">{item.title}</Heading>
-                <Text color="gray.400" fontSize="lg">{item.desc}</Text>
-              </MotionBox>
-            ))}
-          </Grid>
+        <Box w="full" mt={12} pt={8} borderTopWidth="1px">
+          <Heading as="h2" size="lg" textAlign="center" mb={8}>
+            Platform Stats
+          </Heading>
+          
+          {loading ? (
+            <VStack justifyContent="center" py={8}>
+              <Spinner size="lg" />
+            </VStack>
+          ) : stats ? (
+            <Grid templateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap={6}>
+              <GridItem p={6} borderWidth="1px" borderRadius="lg" textAlign="center">
+                <Text fontSize="sm" color="gray.600" mb={2}>Total Tips</Text>
+                <Heading size="md">{stats.totalTipsCount}</Heading>
+              </GridItem>
+              <GridItem p={6} borderWidth="1px" borderRadius="lg" textAlign="center">
+                <Text fontSize="sm" color="gray.600" mb={2}>Total Volume</Text>
+                <Heading size="md">{Number(stats.totalVolumeSol).toFixed(2)} SOL</Heading>
+              </GridItem>
+              <GridItem p={6} borderWidth="1px" borderRadius="lg" textAlign="center">
+                <Text fontSize="sm" color="gray.600" mb={2}>Platform Fees</Text>
+                <Heading size="md">{Number(stats.platformFeeCollected).toFixed(2)} SOL</Heading>
+              </GridItem>
+              <GridItem p={6} borderWidth="1px" borderRadius="lg" textAlign="center">
+                <Text fontSize="sm" color="gray.600" mb={2}>Creators</Text>
+                <Heading size="md">{stats.uniqueCreators}</Heading>
+              </GridItem>
+              <GridItem p={6} borderWidth="1px" borderRadius="lg" textAlign="center">
+                <Text fontSize="sm" color="gray.600" mb={2}>Supporters</Text>
+                <Heading size="md">{stats.uniqueDonors}</Heading>
+              </GridItem>
+              <GridItem p={6} borderWidth="1px" borderRadius="lg" textAlign="center">
+                <Text fontSize="sm" color="gray.600" mb={2}>Premium Users</Text>
+                <Heading size="md">{stats.premiumUsersCount}</Heading>
+              </GridItem>
+            </Grid>
+          ) : null}
         </Box>
-
-        {/* FAQ Section */}
-        <Box py={24} maxW="800px" mx="auto" px={4}>
-          <Heading textAlign="center" size="2xl" mb={12} color="white" fontFamily="heading">FAQ</Heading>
-          <Accordion.Root collapsible>
-            {[
-              { q: "Is there a fee?", a: "Yes, a tiny 2% protocol fee to support the dev. 98% goes to you instantly." },
-              { q: "Do I need a bank account?", a: "Nope! You just need an Ethereum wallet like MetaMask." },
-              { q: "Can I use this for non-streaming?", a: "Absolutely. Writers, coders, and artists use PuffTip as a 'Buy Me a Coffee' alternative." }
-            ].map((item, i) => (
-              <Accordion.Item key={i} value={`item-${i}`} border="1px solid" borderColor="whiteAlpha.200" mb={4} borderRadius="lg" bg="rgba(0,0,0,0.4)">
-                <Accordion.ItemTrigger p={6}>
-                  <Box flex="1" textAlign="left" fontWeight="bold" fontSize="xl">
-                    {item.q}
-                  </Box>
-                  <Accordion.ItemIndicator />
-                </Accordion.ItemTrigger>
-                <Accordion.ItemContent pb={6} px={6} color="gray.300">
-                  {item.a}
-                </Accordion.ItemContent>
-              </Accordion.Item>
-            ))}
-          </Accordion.Root>
-        </Box>
-
-        {/* Footer */}
-        <Box py={10} textAlign="center" color="gray.600">
-          <Text>Built with 💜 on Ethereum</Text>
-        </Box>
-      </Box>
-    </Background>
+      </VStack>
+    </Container>
   );
 }

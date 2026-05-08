@@ -1,0 +1,149 @@
+// Prisma Schema for PuffTip Solana
+// This schema defines the database structure for tracking tips, users, and custom pages
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User model: Stores streamer/creator information
+model User {
+  id                    String    @id @default(cuid())
+  username              String    @unique
+  walletAddress         String    @unique // Solana public key
+  displayName           String?
+  bio                   String?
+  profileImage          String?
+  
+  // Premium subscription
+  isPremium             Boolean   @default(false)
+  premiumExpiresAt      DateTime?
+  
+  // Customization (only available to premium users)
+  customPageColor       String?   @default("#000000")
+  customPageBgImage     String?
+  customThankyouMessage String?
+  
+  // Metadata
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  tips                  Tip[]
+  customPage            CustomPage?
+  
+  @@index([walletAddress])
+  @@index([createdAt])
+}
+
+// Tip model: Records all tips sent by donors
+model Tip {
+  id                    String    @id @default(cuid())
+  
+  // Sender info
+  donorWalletAddress    String    // Solana public key of tipper
+  donorName             String?   // Optional name provided by tipper
+  
+  // Recipient info
+  recipientId           String
+  recipient             User      @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  
+  // Tip details
+  amount                Decimal   @db.Decimal(20, 8) // SOL amount (with 8 decimals)
+  message               String?   @db.VarChar(500)
+  
+  // Transaction tracking
+  transactionHash       String    @unique // Solana transaction signature
+  blockNumber           BigInt?   // Solana block height
+  confirmationStatus    String    @default("pending") // pending, confirmed, finalized
+  
+  // Fee tracking (5% platform fee)
+  platformFee           Decimal   @db.Decimal(20, 8)
+  creatorAmount         Decimal   @db.Decimal(20, 8)
+  
+  // Metadata
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@index([recipientId])
+  @@index([transactionHash])
+  @@index([createdAt])
+  @@index([donorWalletAddress])
+}
+
+// CustomPage model: Stores customization for user's public tip page
+model CustomPage {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Display customization
+  pageTitle             String    @default("Support Me!")
+  pageDescription       String?
+  backgroundColor       String    @default("#ffffff")
+  backgroundImage       String?
+  buttonColor           String    @default("#7c3aed")
+  textColor             String    @default("#000000")
+  
+  // Tips display settings
+  showTipAmount         Boolean   @default(true)
+  showDonorName         Boolean   @default(true)
+  showMessage           Boolean   @default(true)
+  tipsPerPage           Int       @default(20)
+  
+  // Thank you customization
+  thankYouTitle         String    @default("Thank You!")
+  thankYouMessage       String    @default("Thanks for your support!")
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+// StreamNotification model: Tracks pop-ups that should be displayed during streams
+model StreamNotification {
+  id                    String    @id @default(cuid())
+  tipId                 String    // Reference to tip (denormalized for quick queries)
+  
+  streamerId            String
+  
+  // Notification status
+  isDisplayed           Boolean   @default(false)
+  displayedAt           DateTime?
+  
+  // Expiration: notifications auto-clear after some time
+  expiresAt             DateTime
+  
+  createdAt             DateTime  @default(now())
+  
+  @@index([streamerId])
+  @@index([isDisplayed])
+  @@index([expiresAt])
+}
+
+// PlatformStats model: Aggregate statistics for monitoring and analytics
+model PlatformStats {
+  id                    String    @id @default(cuid())
+  
+  // Daily aggregates (timestamp represents the day)
+  date                  DateTime  @unique @db.Date
+  
+  // Tip statistics
+  totalTipsCount        Int       @default(0)
+  totalVolumeSol        Decimal   @db.Decimal(20, 8) // Total SOL tipped
+  platformFeeCollected  Decimal   @db.Decimal(20, 8) // 5% of all tips
+  
+  // User statistics
+  uniqueDonors          Int       @default(0)
+  uniqueCreators        Int       @default(0)
+  activeUsers           Int       @default(0)
+  
+  // Premium statistics
+  premiumUsersCount     Int       @default(0)
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}

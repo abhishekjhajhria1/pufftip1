@@ -1,255 +1,286 @@
+import { Box, VStack, Heading, Text, Button, Container, Spinner, HStack, Badge, useDisclosure } from "@chakra-ui/react";
+import { FiCheck, FiAlertCircle, FiBell } from "react-icons/fi";
 import { useRouter } from "next/router";
-import { Box, Flex, Avatar, Heading, Text, Button, Spinner, Center, Input, Progress, Icon, Link as ChakraLink } from "@chakra-ui/react";
-import { useWriteContract, useWaitForTransactionReceipt, useChainId, useBalance } from "wagmi";
-import { parseEther } from "viem";
-import { useState, useEffect } from "react";
-import { PUFFTIP_ABI } from "@/utils/abi";
-import { getPuffTipAddress } from "@/utils/contract";
-import { toaster } from "@/components/ui/toaster";
-import Background from "@/components/visuals/Background";
-import { motion } from "framer-motion";
-import { FaTwitter, FaGithub, FaGlobe } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import { TipForm } from "@/components/TipForm";
+import { useWebSocketTips } from "@/hooks/useWebSocketTips";
+import { NotificationManager, setNotificationManager } from "@/components/NotificationManager";
+import { NotificationSettings } from "@/components/NotificationSettings";
+import type { Tip as NotificationTip } from "@/components/notifications/types";
 
-const MotionBox = motion(Box);
-
-export default function ProfilePage() {
-  const router = useRouter();
-  const { username: addressParam } = router.query;
-  const accountAddress = typeof addressParam === "string" ? addressParam as `0x${string}` : undefined;
-
-  const chainId = useChainId();
-  const contractAddress = getPuffTipAddress(chainId);
-
-  // Fetch balance for Goal Progress
-  const { data: balance } = useBalance({ address: accountAddress });
-
-  const [tipAmount, setTipAmount] = useState("0.01");
-  const [message, setMessage] = useState("Great content!");
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-
-  // Profile State
-  interface ProfileState {
+interface Creator {
+  user: {
+    id: string;
     username: string;
-    bio: string;
-    theme: "cyberpunk" | "coffee" | "pixel" | "default";
-    socials?: { twitter?: string; github?: string; website?: string };
-    goal?: { title: string; amount: number };
-  }
+    displayName?: string;
+    bio?: string;
+    profileImage?: string;
+    isPremium: boolean;
+  };
+  stats: {
+    totalTipsReceived: number;
+    tipCount: number;
+  };
+}
 
-  const [profileData, setProfileData] = useState<ProfileState>({
-    username: "Loading...",
-    bio: "...",
-    theme: "default"
-  });
+interface Tip {
+  id: string;
+  donorName?: string;
+  amount: string;
+  message?: string;
+  createdAt: string;
+}
 
-  // Fetch from API
+export default function UserPublicPage() {
+  const router = useRouter();
+  const { username } = router.query;
+  const { isOpen: isSettingsOpen, onOpen: onSettingsOpen, onClose: onSettingsClose } = useDisclosure();
+  const notificationTriggerRef = useRef<((tip: NotificationTip) => void) | null>(null);
+
+  const [creator, setCreator] = useState<Creator | null>(null);
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Real-time WebSocket integration
+  const { isConnected, latestTip } = useWebSocketTips(
+    typeof username === "string" ? username : ""
+  );
+
+  // Initialize notification manager
   useEffect(() => {
-    if (!accountAddress) return;
-    fetch(`/api/u/${accountAddress}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data) {
-          setProfileData({
-            username: data.username || "Anon",
-            bio: data.bio || "Just another cypherpunk.",
-            theme: data.theme || "default",
-            socials: data.socials,
-            goal: data.goal
-          });
+    setNotificationManager((tip: NotificationTip) => {
+      if (notificationTriggerRef.current) {
+        notificationTriggerRef.current(tip);
+      }
+    });
+  }, []);
+
+  // Trigger notification when new tip arrives via WebSocket
+  useEffect(() => {
+    if (latestTip && notificationTriggerRef.current) {
+      const notificationTip: NotificationTip = {
+        id: latestTip.id,
+        donorName: latestTip.donorName || "Anonymous",
+        amount: parseFloat(latestTip.amount),
+        message: latestTip.message || "",
+        timestamp: new Date(latestTip.createdAt),
+        avatar: undefined, // Could be enhanced with donor avatar
+      };
+      notificationTriggerRef.current(notificationTip);
+    }
+  }, [latestTip]);
+
+  useEffect(() => {
+    if (!username || typeof username !== "string") return;
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [creatorRes, tipsRes] = await Promise.all([
+          fetch(`/api/creators/${username}`),
+          fetch(`/api/tips/${username}?limit=20`),
+        ]);
+
+        if (creatorRes.ok) {
+          const creatorData = await creatorRes.json();
+          setCreator(creatorData);
         }
-        setIsLoadingProfile(false);
-      })
-      .catch(e => {
-        console.error(e);
-        setIsLoadingProfile(false);
-      });
-  }, [accountAddress]);
 
+        if (tipsRes.ok) {
+          const tipsData = await tipsRes.json();
+          setTips(tipsData.tips || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const { data: hash, writeContract, isPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
+    fetchData();
+  }, [username]);
 
-  const handleTip = async () => {
-    if (!accountAddress) return;
+  /**
+   * Handle successful tip submission
+   * Refresh tip history and show success message
+   */
+  const handleTipSuccess = async () => {
     try {
-      writeContract({
-        address: contractAddress,
-        abi: PUFFTIP_ABI,
-        functionName: "tip",
-        args: [accountAddress, message],
-        value: parseEther(tipAmount)
-      });
-    } catch (err) {
-      console.error(err);
-      toaster.create({ title: "Error", description: "Failed to send tip", type: "error" });
+      setSuccessMessage("Tip sent successfully! 🎉");
+      
+      // Refresh tips list
+      const tipsRes = await fetch(`/api/tips/${username}?limit=20`);
+      if (tipsRes.ok) {
+        const tipsData = await tipsRes.json();
+        setTips(tipsData.tips || []);
+      }
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (error) {
+      console.error("Failed to refresh tips:", error);
     }
   };
 
-  useEffect(() => {
-    if (isConfirmed) {
-      toaster.create({ title: "Sent!", description: "Tip sent successfully!", type: "success" });
-    }
-  }, [isConfirmed]);
+  /**
+   * Handle tip submission error
+   */
+  const handleTipError = (error: string) => {
+    setErrorMessage(error);
+    // Clear error message after 5 seconds
+    setTimeout(() => setErrorMessage(null), 5000);
+  };
 
-  // Goal Calculation
-  const currentEth = balance ? parseFloat(balance.formatted) : 0;
-  const goalTarget = profileData.goal ? profileData.goal.amount : 1;
-  const progressPercent = Math.min((currentEth / goalTarget) * 100, 100);
+  if (!username) {
+    return <Text>Loading...</Text>;
+  }
 
-  if (!router.isReady || isLoadingProfile) {
+  if (loading) {
     return (
-      <Background theme="default">
-        <Center minH="100vh"><Spinner size="xl" color="white" /></Center>
-      </Background>
+      <Container centerContent py={20}>
+        <Spinner size="lg" />
+      </Container>
+    );
+  }
+
+  if (!creator) {
+    return (
+      <Container centerContent py={20}>
+        <VStack gap={4}>
+          <Heading>Creator Not Found</Heading>
+          <Button onClick={() => router.push("/")} colorScheme="blue">
+            Go Home
+          </Button>
+        </VStack>
+      </Container>
     );
   }
 
   return (
-    <Background theme={profileData.theme}>
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        minH="100vh"
-        px={4}
-      >
-        <MotionBox
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, type: "spring" }}
-          bg="rgba(0,0,0,0.6)"
-          borderRadius="3xl"
-          p={10}
-          maxW="500px"
-          w="full"
-          border="1px solid"
-          borderColor="brand.purple"
-          backdropFilter="blur(20px)"
-          boxShadow="0 0 40px rgba(0,0,0,0.5)"
-        >
-          {/* Header Section */}
-          <Flex align="center" mb={6} direction="column">
-            <MotionBox
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-            >
-              <Avatar.Root size="2xl" mb={4} border="4px solid" borderColor="brand.pink">
-                <Avatar.Fallback name={profileData.username} bg="brand.purple" color="white" fontSize="3xl" />
-                <Avatar.Image src="" />
-              </Avatar.Root>
-            </MotionBox>
+    <Container maxW="container.lg" py={8}>
+      {/* Notification System */}
+      <NotificationManager creatorId={typeof username === "string" ? username : ""} />
 
-            <Heading size="3xl" color="white" mb={2} fontFamily="heading" textShadow="0 0 10px rgba(255,255,255,0.5)">
-              {profileData.username}
+      <VStack gap={8}>
+        <Box textAlign="center" py={8} borderBottomWidth="1px" w="full">
+          <HStack justifyContent="center" mb={2} gap={2}>
+            <Heading as="h1" size="2xl">
+              {creator.user.displayName || creator.user.username}
             </Heading>
-            <Text color="brand.cyan" fontFamily="subheading" fontSize="lg" textAlign="center">{profileData.bio}</Text>
-
-            {/* Social Icons */}
-            {profileData.socials && (
-              <Flex gap={4} mt={4}>
-                {profileData.socials.twitter && (
-                  <ChakraLink href={`https://twitter.com/${profileData.socials.twitter}`} target="_blank" rel="noopener noreferrer" color="gray.400" _hover={{ color: "twitter.400", transform: "scale(1.2)" }}>
-                    <Icon as={FaTwitter} boxSize={6} />
-                  </ChakraLink>
-                )}
-                {profileData.socials.github && (
-                  <ChakraLink href={`https://github.com/${profileData.socials.github}`} target="_blank" rel="noopener noreferrer" color="gray.400" _hover={{ color: "white", transform: "scale(1.2)" }}>
-                    <Icon as={FaGithub} boxSize={6} />
-                  </ChakraLink>
-                )}
-                {profileData.socials.website && (
-                  <ChakraLink href={`https://${profileData.socials.website}`} target="_blank" rel="noopener noreferrer" color="gray.400" _hover={{ color: "brand.pink", transform: "scale(1.2)" }}>
-                    <Icon as={FaGlobe} boxSize={6} />
-                  </ChakraLink>
-                )}
-              </Flex>
-            )}
-          </Flex>
-
-          {/* Goal Section */}
-          {profileData.goal && (
-            <MotionBox
-              mb={8}
-              bg="rgba(255,255,255,0.1)"
-              p={4}
-              borderRadius="xl"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Flex justify="space-between" mb={2} color="brand.yellow" fontFamily="heading" fontSize="sm">
-                <Text>{profileData.goal.title}</Text>
-                <Text>{currentEth.toFixed(2)} / {profileData.goal.amount} ETH</Text>
-              </Flex>
-              <Progress.Root value={progressPercent} size="sm" colorScheme="pink" borderRadius="full">
-                <Progress.Track bg="rgba(0,0,0,0.5)">
-                  <Progress.Range />
-                </Progress.Track>
-              </Progress.Root>
-            </MotionBox>
+            {creator.user.isPremium && <Badge colorScheme="gold">Premium</Badge>}
+          </HStack>
+          {creator.user.bio && (
+            <Text color="gray.600" mb={2}>
+              {creator.user.bio}
+            </Text>
           )}
+          <Text fontSize="sm" color="gray.500" mb={4}>
+            {creator.stats.tipCount} tips • {Number(creator.stats.totalTipsReceived).toFixed(2)} SOL received
+          </Text>
+          {/* Settings Button */}
+          <Button
+            leftIcon={<FiBell />}
+            colorScheme="purple"
+            variant="outline"
+            size="sm"
+            onClick={onSettingsOpen}
+          >
+            Notification Settings
+          </Button>
+        </Box>
 
-          {/* Tipping Section */}
-          <Box>
-            <Text color="gray.400" mb={2} fontSize="sm" fontFamily="body">LEAVE A MESSAGE</Text>
-            <Box mb={6}>
-              <Input
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Say something nice..."
-                bg="rgba(255,255,255,0.1)"
-                border="none"
-                color="white"
-                _focus={{ boxShadow: "0 0 0 2px #FF0080" }}
-                p={6}
-                fontSize="lg"
-                borderRadius="xl"
-              />
+        {/* Tip Form Section */}
+        <Box maxW="500px" w="full" mx="auto">
+          <VStack gap={4} alignItems="stretch">
+            <Heading as="h2" size="md">
+              Send a Tip
+            </Heading>
+
+            {/* Success Message */}
+            {successMessage && (
+              <Box 
+                p={3} 
+                borderRadius="md" 
+                bg="green.50" 
+                borderLeft="4px solid #22863a"
+                display="flex" 
+                alignItems="flex-start"
+                gap={2}
+              >
+                <FiCheck style={{ marginTop: "2px", color: "#22863a", flexShrink: 0 }} />
+                <Text fontSize="sm">{successMessage}</Text>
+              </Box>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+              <Box 
+                p={3} 
+                borderRadius="md" 
+                bg="red.50" 
+                borderLeft="4px solid #cb2431"
+                display="flex" 
+                alignItems="flex-start"
+                gap={2}
+              >
+                <FiAlertCircle style={{ marginTop: "2px", color: "#cb2431", flexShrink: 0 }} />
+                <Text fontSize="sm">{errorMessage}</Text>
+              </Box>
+            )}
+
+            {/* WebSocket Connection Status */}
+            <Box fontSize="sm" color={isConnected ? "green.500" : "gray.500"}>
+              {isConnected ? "✓ Live notifications enabled" : "⌛ Connecting..."}
             </Box>
 
-            <Flex gap={3} mb={8} justify="center">
-              {["0.001", "0.01", "0.05"].map(amt => (
-                <Button
-                  key={amt}
-                  size="md"
-                  variant="outline"
-                  onClick={() => setTipAmount(amt)}
-                  bg={tipAmount === amt ? "brand.pink" : "transparent"}
-                  borderColor="brand.pink"
-                  color="white"
-                  borderRadius="xl"
-                  _hover={{ bg: "brand.pink", transform: "translateY(-2px)" }}
-                  fontFamily="monospace"
-                >
-                  {amt} ETH
-                </Button>
-              ))}
-            </Flex>
+            {/* Tip Form Component */}
+            <TipForm
+              username={typeof username === "string" ? username : ""}
+              onSuccess={handleTipSuccess}
+              onError={handleTipError}
+            />
+          </VStack>
+        </Box>
 
-            <Button
-              size="2xl"
-              width="full"
-              onClick={handleTip}
-              loading={isPending || isConfirming}
-              loadingText="SENDING..."
-              bgGradient="linear(to-r, brand.pink, brand.purple)"
-              _hover={{
-                bgGradient: "linear(to-r, brand.yellow, brand.pink)",
-                transform: "scale(1.02)",
-                boxShadow: "0 0 20px #FF0080"
-              }}
-              color="white"
-              borderRadius="full"
-              fontFamily="heading"
-              fontSize="2xl"
-              boxShadow="0 4px 15px rgba(0,0,0,0.3)"
-            >
-              SEND TIP ({tipAmount} ETH)
-            </Button>
-          </Box>
-        </MotionBox>
-      </Flex>
-    </Background>
+        <Box w="full" p={6} borderTopWidth="1px" mt={8}>
+          <Heading as="h3" size="md" mb={4}>
+            Recent Tips ({tips.length})
+          </Heading>
+          {tips.length > 0 ? (
+            <VStack gap={4} alignItems="stretch">
+              {tips.map((tip) => (
+                <Box key={tip.id} p={4} borderWidth="1px" borderRadius="md">
+                  <HStack justifyContent="space-between" mb={2}>
+                    <Text fontWeight="bold">{tip.donorName || "Anonymous"}</Text>
+                    <Text fontWeight="bold" color="purple.600">
+                      {Number(tip.amount).toFixed(2)} SOL
+                    </Text>
+                  </HStack>
+                  {tip.message && (
+                    <Text color="gray.700" mb={2}>
+                      &quot;{tip.message}&quot;
+                    </Text>
+                  )}
+                  <Text fontSize="xs" color="gray.500">
+                    {new Date(tip.createdAt).toLocaleString()}
+                  </Text>
+                </Box>
+              ))}
+            </VStack>
+          ) : (
+            <Text color="gray.600">No tips yet. Be the first to support this creator!</Text>
+          )}
+        </Box>
+      </VStack>
+
+      {/* Notification Settings Modal */}
+      <NotificationSettings
+        creatorId={typeof username === "string" ? username : ""}
+        isOpen={isSettingsOpen}
+        onClose={onSettingsClose}
+      />
+    </Container>
   );
 }

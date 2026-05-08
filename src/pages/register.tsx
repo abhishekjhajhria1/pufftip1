@@ -1,179 +1,123 @@
-// src/pages/register.tsx
-
+import { VStack, Heading, Text, Button, Input, Container, Textarea } from "@chakra-ui/react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useRouter } from "next/router";
 import { useState } from "react";
-import { Box, VStack, Button, Heading } from "@chakra-ui/react";
-import dynamic from "next/dynamic";
-
-// Dynamically import your Framer Motion visual themes
-const CoffeeScene = dynamic(() => import("../themes/themeVisuals/coffee"), { ssr: false });
-const CandyScene = dynamic(() => import("../themes/themeVisuals/candy"), { ssr: false });
-const PizzaScene = dynamic(() => import("../themes/themeVisuals/pizza"), { ssr: false });
-const CigaretteScene = dynamic(() => import("../themes/themeVisuals/cigarette"), { ssr: false });
-
-// Add more as you build
-
-const THEMES = [
-  {
-    key: "coffee",
-    label: "Coffeehouse",
-    visual: <CoffeeScene />,
-    colorScheme: "orange"
-  },
-  {
-    key: "candy",
-    label: "Candy Pop",
-    visual: <CandyScene />,
-    colorScheme: "pink"
-  },
-  {
-    key: "pizza",
-    label: "Pizzeria",
-    visual: <PizzaScene />,
-    colorScheme: "orange"
-  },
-  {
-    key: "cigarette",
-    label: "Cigarette Lounge",
-    visual: <CigaretteScene />,
-    colorScheme: "brown"
-  }
-  // Add more as you wish
-];
 
 export default function Register() {
-  const [selectedTheme, setSelectedTheme] = useState(THEMES[0]);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [success, setSuccess] = useState(false);
+  const { connected, publicKey } = useWallet();
+  const router = useRouter();
+  
+  const [loading, setLoading] = useState(false);
 
-  const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const chosen = THEMES.find(t => t.key === e.target.value);
-    setSelectedTheme(chosen || THEMES[0]);
+  const [formData, setFormData] = useState({
+    username: "",
+    displayName: "",
+    bio: "",
+  });
+
+  const handleRegister = async () => {
+    if (!connected || !publicKey) return;
+
+    if (!formData.username.trim()) {
+      return;
+    }
+
+    if (formData.username.length < 3) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // For now, we'll store locally since we need blockchain integration for registration
+      // In Phase 5, this will call the smart contract to initialize_creator
+      const creatorData = {
+        username: formData.username.toLowerCase(),
+        displayName: formData.displayName || formData.username,
+        bio: formData.bio,
+        walletAddress: publicKey.toString(),
+      };
+
+      // Store in browser for demo
+      localStorage.setItem("creator", JSON.stringify(creatorData));
+
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSuccess(true);
-    setUsername("");
-    setEmail("");
-    setTimeout(() => setSuccess(false), 2500);
-  };
+  if (!connected) {
+    return (
+      <Container maxW="container.sm" py={20}>
+        <VStack gap={8} alignItems="center">
+          <Text color="red.500">Please connect your wallet first</Text>
+          <Button onClick={() => router.push("/")} colorScheme="blue">
+            Go Home
+          </Button>
+        </VStack>
+      </Container>
+    );
+  }
 
   return (
-    <Box minH="100vh" position="relative" overflow="hidden">
-      {/* Render only the selected animated scene/background */}
-      <Box position="absolute" inset={0} zIndex={0}>
-        {selectedTheme.visual}
-      </Box>
+    <Container maxW="container.sm" py={20}>
+      <VStack gap={6} alignItems="stretch">
+        <Heading as="h1" size="2xl" textAlign="center">
+          Register as Creator
+        </Heading>
 
-      {/* Centered card */}
-      <Box
-        position="relative"
-        zIndex={3}
-        minH="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <VStack
-          gap={7}
-          maxW="md"
-          width="100%"
-          boxShadow="2xl"
-          opacity={0.95}
-          borderRadius="2xl"
-          border="2px"
-          px={[6, 12]}
-          py={[7, 10]}
+        <div>
+          <Text mb={2} fontWeight="bold">Username *</Text>
+          <Input
+            placeholder="yourname"
+            value={formData.username}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            disabled={loading}
+          />
+          <Text fontSize="xs" color="gray.500" mt={1}>
+            This will be your PuffTip profile URL
+          </Text>
+        </div>
+
+        <div>
+          <Text mb={2} fontWeight="bold">Display Name</Text>
+          <Input
+            placeholder="Your Display Name"
+            value={formData.displayName}
+            onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <Text mb={2} fontWeight="bold">Bio</Text>
+          <Textarea
+            placeholder="Tell supporters about yourself..."
+            value={formData.bio}
+            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+            rows={3}
+            disabled={loading}
+          />
+        </div>
+
+        <Button
+          colorScheme="purple"
+          size="lg"
+          onClick={handleRegister}
+          loading={loading}
         >
-          <Heading fontSize="2xl" fontWeight="bold" textAlign="center" mb={2}>
-            Create Your Tipping Profile
-          </Heading>
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <VStack gap={5} width="100%">
-              {/* Username */}
-              <label style={{ width: "100%", fontWeight: "bold" }}>
-                Username*
-                <input
-                  required
-                  placeholder="Choose a username"
-                  style={{
-                    width: "100%",
-                    marginTop: 4,
-                    padding: "12px 10px",
-                    borderRadius: 8,
-                    border: "1px solid #bbb",
-                    fontSize: "1rem",
-                  }}
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                />
-              </label>
-              {/* Email */}
-              <label style={{ width: "100%", fontWeight: "bold" }}>
-                Email (optional)
-                <input
-                  type="email"
-                  placeholder="you@email.com"
-                  style={{
-                    width: "100%",
-                    marginTop: 4,
-                    padding: "12px 10px",
-                    borderRadius: 8,
-                    border: "1px solid #bbb",
-                    fontSize: "1rem",
-                  }}
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-              </label>
-              {/* Theme selection */}
-              <label style={{ width: "100%", fontWeight: "bold" }}>
-                Theme*
-                <select
-                  required
-                  style={{
-                    width: "100%",
-                    marginTop: 4,
-                    padding: "12px 10px",
-                    borderRadius: 8,
-                    border: "1px solid #bbb",
-                    fontSize: "1rem",
-                  }}
-                  value={selectedTheme.key}
-                  onChange={handleThemeChange}
-                >
-                  {THEMES.map(t => (
-                    <option value={t.key} key={t.key}>{t.label}</option>
-                  ))}
-                </select>
-              </label>
-              {/* Submit button */}
-              <Button
-                type="submit"
-                colorScheme={selectedTheme.colorScheme}
-                fontWeight="bold"
-                borderRadius="xl"
-                fontSize="lg"
-                width="100%"
-                py={6}
-                _hover={{
-                  transform: "scale(1.04)",
-                  boxShadow: "xl",
-                }}
-              >
-                Register
-              </Button>
-            </VStack>
-          </form>
-          {/* Success message */}
-          {success && (
-            <Box color="green.600" fontWeight="bold" textAlign="center" mt={1}>
-              🎉 Registration successful!
-            </Box>
-          )}
-        </VStack>
-      </Box>
-    </Box>
+          Register
+        </Button>
+
+        <Text fontSize="sm" color="gray.500" textAlign="center">
+          Wallet: {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-4)}
+        </Text>
+      </VStack>
+    </Container>
   );
 }

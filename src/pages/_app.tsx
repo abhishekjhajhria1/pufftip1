@@ -14,11 +14,8 @@
 
 import { Provider } from "@/components/ui/provider"
 import type { AppProps } from "next/app";
-import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { config } from '@/config/wagmi';
-import '@rainbow-me/rainbowkit/styles.css';
+import { SolanaConfigProvider } from '@/lib/solanaConfig';
 
 // Fonts
 import "@fontsource/bangers";
@@ -29,15 +26,13 @@ const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <WagmiProvider config={config}>
+    <SolanaConfigProvider>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          <Provider>
-            <Component {...pageProps} />
-          </Provider>
-        </RainbowKitProvider>
+        <Provider>
+          <Component {...pageProps} />
+        </Provider>
       </QueryClientProvider>
-    </WagmiProvider>
+    </SolanaConfigProvider>
   );
 }
 export default MyApp;
