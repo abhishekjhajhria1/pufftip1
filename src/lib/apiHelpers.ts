@@ -1,8 +1,19 @@
 /**
- * API Routes for PuffTip
+ * API Helpers for PuffTip Backend
  *
- * These are Next.js API routes that serve as the backend for the frontend.
- * Each route handles specific business logic.
+ * Provides core business logic functions:
+ * - Wallet authentication (signature verification, nonce generation)
+ * - Creator profile & statistics queries
+ * - Tip creation & retrieval
+ * - Platform statistics
+ * - User profile management
+ *
+ * Dependencies:
+ * - @solana/web3.js - Wallet address validation
+ * - tweetnacl - Signature verification
+ * - bs58 - Base58 encoding/decoding
+ * - crypto - Random nonce generation
+ * - @prisma/client - Database operations
  */
 
 import { prisma } from "@/lib/prisma";
@@ -12,8 +23,12 @@ import bs58 from "bs58";
 import { randomBytes } from "crypto";
 
 /**
- * Helper: Verify wallet signature
- * Users prove ownership by signing a nonce with their wallet
+ * Verify wallet signature using TweetNaCl
+ *
+ * Flow:
+ * 1. Decode message, signature, and public key from base58
+ * 2. Use nacl.sign.detached.verify to validate signature matches the public key
+ * 3. Return verification result (does not throw on invalid signatures)
  */
 export function verifySignature(
   message: string,
@@ -30,83 +45,94 @@ export function verifySignature(
       signatureBuffer,
       publicKeyBuffer
     );
-  } catch (error) {
-    console.error("Signature verification failed:", error);
+  } catch {
     return false;
   }
 }
 
 /**
- * GET /api/creators/{username}
- * Get creator profile and stats
+ * Fetch creator profile and statistics
+ *
+ * Returns:
+ * - user: Full user object including most recent 10 tips
+ * - stats: Aggregated statistics (totalTipsReceived, tipCount, isPremium)
+ *
+ * Returns null if user not found.
  */
 export async function getCreator(username: string) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { username },
-      include: {
-        tips: {
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        },
-        customPage: true,
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: {
+      tips: {
+        orderBy: { createdAt: "desc" },
+        take: 10,
       },
-    });
+      customPage: true,
+    },
+  });
 
-    if (!user) {
-      return null;
-    }
-
-    // Calculate stats
-    const stats = {
-      totalTipsReceived: user.tips.reduce((sum, tip) => sum + Number(tip.creatorAmount), 0),
-      tipCount: user.tips.length,
-      isPremium: user.isPremium,
-    };
-
-    return {
-      user,
-      stats,
-    };
-  } catch (error) {
-    console.error("Error getting creator:", error);
-    throw error;
+  if (!user) {
+    return null;
   }
+
+  const stats = {
+    totalTipsReceived: user.tips.reduce((sum, tip) => sum + Number(tip.creatorAmount), 0),
+    tipCount: user.tips.length,
+    isPremium: user.isPremium,
+  };
+
+  return {
+    user,
+    stats,
+  };
 }
 
 /**
- * GET /api/tips/{username}
- * Get tip history for a creator
+ * Fetch tip history for a creator
+ *
+ * Parameters:
+ * - username: Creator's username
+ * - limit: Max tips to return (default 20)
+ * - offset: Pagination offset (default 0)
+ *
+ * Returns empty array if user not found.
  */
 export async function getTips(username: string, limit = 20, offset = 0) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { username },
-      select: { id: true },
-    });
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
 
-    if (!user) {
-      return [];
-    }
-
-    const tips = await prisma.tip.findMany({
-      where: { recipientId: user.id },
-      orderBy: { createdAt: "desc" },
-      skip: offset,
-      take: limit,
-    });
-
-    return tips;
-  } catch (error) {
-    console.error("Error getting tips:", error);
-    throw error;
+  if (!user) {
+    return [];
   }
+
+  return await prisma.tip.findMany({
+    where: { recipientId: user.id },
+    orderBy: { createdAt: "desc" },
+    skip: offset,
+    take: limit,
+  });
 }
 
 /**
- * POST /api/tips
- * Create a tip transaction
- * This constructs the Solana transaction for the frontend to sign
+ * Create a new tip transaction
+ *
+ * Workflow:
+ * 1. Validate tip amount (must be positive finite number)
+ * 2. Verify recipient exists in database
+ * 3. Validate message length (max 500 chars)
+ * 4. Calculate splits: 95% to creator, 5% platform fee
+ * 5. Create placeholder tip record (actual tx submitted by frontend)
+ *
+ * Parameters:
+ * - recipientUsername: Creator receiving the tip
+ * - amountSol: Amount in SOL
+ * - message: Optional message from tipper
+ * - donorName: Optional display name for tipper
+ * - donorWalletAddress: Tipper's wallet (auto-filled if signed)
+ *
+ * Throws on validation errors or if recipient not found.
  */
 export async function createTip(
   recipientUsername: string,
@@ -115,76 +141,60 @@ export async function createTip(
   donorName?: string,
   donorWalletAddress?: string
 ) {
-  try {
-    if (!Number.isFinite(amountSol) || amountSol <= 0) {
-      throw new Error("Amount must be greater than 0");
-    }
-
-    // Verify recipient exists
-    const recipient = await prisma.user.findUnique({
-      where: { username: recipientUsername },
-    });
-
-    if (!recipient) {
-      throw new Error("Recipient not found");
-    }
-
-    // Validate message length
-    if (message.length > 500) {
-      throw new Error("Message too long (max 500 characters)");
-    }
-
-    // Convert SOL to lamports
-    const amountLamports = Math.floor(amountSol * 1_000_000_000);
-    const platformFee = Math.floor(amountLamports / 20); // 5%
-    const creatorAmount = amountLamports - platformFee; // 95%
-
-    // In Phase 3, we just create a placeholder
-    // The actual transaction will be created by the frontend
-    // and submitted to the Solana program
-    const tip = await prisma.tip.create({
-      data: {
-        donorWalletAddress: donorWalletAddress || "pending",
-        recipientId: recipient.id,
-        amount: (amountLamports / 1_000_000_000).toString(),
-        message,
-        donorName,
-        transactionHash: "pending",
-        platformFee: (platformFee / 1_000_000_000).toString(),
-        creatorAmount: (creatorAmount / 1_000_000_000).toString(),
-        confirmationStatus: "pending",
-      },
-    });
-
-    return tip;
-  } catch (error) {
-    console.error("Error creating tip:", error);
-    throw error;
+  if (!Number.isFinite(amountSol) || amountSol <= 0) {
+    throw new Error("Amount must be greater than 0");
   }
+
+  const recipient = await prisma.user.findUnique({
+    where: { username: recipientUsername },
+  });
+
+  if (!recipient) {
+    throw new Error("Recipient not found");
+  }
+
+  if (message.length > 500) {
+    throw new Error("Message too long (max 500 characters)");
+  }
+
+  const amountLamports = Math.floor(amountSol * 1_000_000_000);
+  const platformFee = Math.floor(amountLamports / 20); // 5%
+  const creatorAmount = amountLamports - platformFee; // 95%
+
+  return await prisma.tip.create({
+    data: {
+      donorWalletAddress: donorWalletAddress || "pending",
+      recipientId: recipient.id,
+      amount: (amountLamports / 1_000_000_000).toString(),
+      message,
+      donorName,
+      transactionHash: "pending",
+      platformFee: (platformFee / 1_000_000_000).toString(),
+      creatorAmount: (creatorAmount / 1_000_000_000).toString(),
+      confirmationStatus: "pending",
+    },
+  });
 }
 
 /**
- * POST /api/auth/nonce
  * Generate a nonce for wallet authentication
+ *
+ * Workflow:
+ * 1. Validate wallet address is a valid Solana PublicKey
+ * 2. Generate random 16-byte hex nonce
+ * 3. Return nonce + pre-formatted message for user to sign
+ *
+ * The user signs this message to prove wallet ownership.
  */
 export async function generateNonce(walletAddress: string) {
-  try {
-    // Validate wallet address
-    new PublicKey(walletAddress);
+  new PublicKey(walletAddress);
 
-    // Generate random nonce
-    const nonce = randomBytes(16).toString("hex");
+  const nonce = randomBytes(16).toString("hex");
 
-    // Store in cache or database (in production, use Redis)
-    // For now, we'll return it directly
-    return {
-      nonce,
-      message: `Sign this message to prove you own ${walletAddress}: ${nonce}`,
-    };
-  } catch (error) {
-    console.error("Error generating nonce:", error);
-    throw error;
-  }
+  return {
+    nonce,
+    message: `Sign this message to prove you own ${walletAddress}: ${nonce}`,
+  };
 }
 
 /**
