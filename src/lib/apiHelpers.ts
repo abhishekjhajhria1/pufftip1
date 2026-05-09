@@ -115,6 +115,78 @@ export async function getTips(username: string, limit = 20, offset = 0) {
   });
 }
 
+export interface DonorLeaderboardEntry {
+  donorKey: string;
+  donorName: string;
+  donorWalletAddress: string;
+  totalAmountSol: number;
+  tipCount: number;
+  latestTipAt: string;
+}
+
+/**
+ * Build a donor leaderboard for a creator
+ *
+ * Workflow:
+ * 1. Resolve the creator by username
+ * 2. Load all tips for that creator
+ * 3. Group tips by donor wallet address
+ * 4. Aggregate total SOL, tip count, and latest tip timestamp
+ * 5. Sort by total amount descending and return the top entries
+ */
+export async function getDonorLeaderboard(username: string, limit = 5) {
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
+
+  if (!user) {
+    return [];
+  }
+
+  const tips = await prisma.tip.findMany({
+    where: { recipientId: user.id },
+    select: {
+      donorName: true,
+      donorWalletAddress: true,
+      amount: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const grouped = new Map<string, DonorLeaderboardEntry>();
+
+  for (const tip of tips) {
+    const donorKey = tip.donorWalletAddress || tip.donorName || "anonymous";
+    const donorName = tip.donorName?.trim() || "Anonymous";
+    const amountSol = Number(tip.amount);
+    const existing = grouped.get(donorKey);
+
+    if (existing) {
+      existing.totalAmountSol += amountSol;
+      existing.tipCount += 1;
+      if (tip.createdAt > new Date(existing.latestTipAt)) {
+        existing.latestTipAt = tip.createdAt.toISOString();
+      }
+      continue;
+    }
+
+    grouped.set(donorKey, {
+      donorKey,
+      donorName,
+      donorWalletAddress: tip.donorWalletAddress,
+      totalAmountSol: amountSol,
+      tipCount: 1,
+      latestTipAt: tip.createdAt.toISOString(),
+    });
+  }
+
+  return Array.from(grouped.values())
+    .sort((a, b) => b.totalAmountSol - a.totalAmountSol || b.tipCount - a.tipCount)
+    .slice(0, limit);
+}
+
 /**
  * Create a new tip transaction
  *
