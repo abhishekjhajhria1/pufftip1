@@ -198,83 +198,91 @@ export async function generateNonce(walletAddress: string) {
 }
 
 /**
- * POST /api/auth/verify
- * Verify wallet signature and create session
+ * Verify wallet signature and create/retrieve user session
+ *
+ * Workflow:
+ * 1. Verify the signature matches the message & wallet
+ * 2. Look up user by wallet address
+ * 3. If user doesn't exist, create new user with default username
+ * 4. Return authenticated user object
+ *
+ * Throws on invalid signature or database errors.
  */
 export async function verifyWallet(
   walletAddress: string,
   message: string,
   signature: string
 ) {
-  try {
-    // Verify signature
-    if (!verifySignature(message, signature, walletAddress)) {
-      throw new Error("Invalid signature");
-    }
-
-    // Get or create user
-    let user = await prisma.user.findUnique({
-      where: { walletAddress },
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          walletAddress,
-          username: walletAddress.slice(0, 8),
-        },
-      });
-    }
-
-    return {
-      user,
-      authenticated: true,
-    };
-  } catch (error) {
-    console.error("Error verifying wallet:", error);
-    throw error;
+  if (!verifySignature(message, signature, walletAddress)) {
+    throw new Error("Invalid signature");
   }
+
+  let user = await prisma.user.findUnique({
+    where: { walletAddress },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        walletAddress,
+        username: walletAddress.slice(0, 8),
+      },
+    });
+  }
+
+  return {
+    user,
+    authenticated: true,
+  };
 }
 
 /**
- * GET /api/stats
- * Get platform statistics
+ * Fetch or create platform statistics for today
+ *
+ * Returns daily aggregated stats:
+ * - totalTipsCount: Number of tips sent today
+ * - totalVolumeSol: Total SOL moved today
+ * - platformFeeCollected: Platform fees earned today
+ * - uniqueDonors: Unique tipper wallets today
+ * - uniqueCreators: Unique recipient wallets today
+ * - activeUsers: Users who sent/received today
+ * - premiumUsersCount: Premium members active today
  */
 export async function getPlatformStats() {
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    let stats = await prisma.platformStats.findUnique({
-      where: { date: today },
+  let stats = await prisma.platformStats.findUnique({
+    where: { date: today },
+  });
+
+  if (!stats) {
+    stats = await prisma.platformStats.create({
+      data: {
+        date: today,
+        totalTipsCount: 0,
+        totalVolumeSol: "0",
+        platformFeeCollected: "0",
+        uniqueDonors: 0,
+        uniqueCreators: 0,
+        activeUsers: 0,
+        premiumUsersCount: 0,
+      },
     });
-
-    if (!stats) {
-      // Create today's stats
-      stats = await prisma.platformStats.create({
-        data: {
-          date: today,
-          totalTipsCount: 0,
-          totalVolumeSol: "0",
-          platformFeeCollected: "0",
-          uniqueDonors: 0,
-          uniqueCreators: 0,
-          activeUsers: 0,
-          premiumUsersCount: 0,
-        },
-      });
-    }
-
-    return stats;
-  } catch (error) {
-    console.error("Error getting stats:", error);
-    throw error;
   }
+
+  return stats;
 }
 
 /**
- * UPDATE /api/users/profile
- * Update user profile (for premium customization)
+ * Update user profile (premium features)
+ *
+ * Allows customization of:
+ * - displayName: Public name shown on creator page
+ * - bio: Short description
+ * - profileImage: Avatar URL
+ * - customPageColor: Theme color for creator page
+ * - customThankyouMessage: Custom thank-you message after tipping
  */
 export async function updateUserProfile(
   userId: string,
@@ -286,15 +294,8 @@ export async function updateUserProfile(
     customThankyouMessage?: string;
   }
 ) {
-  try {
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: updates,
-    });
-
-    return user;
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    throw error;
-  }
+  return await prisma.user.update({
+    where: { id: userId },
+    data: updates,
+  });
 }
