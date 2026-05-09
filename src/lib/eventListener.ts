@@ -11,8 +11,9 @@
  */
 
 import { Connection, PublicKey, Logs } from "@solana/web3.js";
-import { PrismaClient } from "@prisma/client";
 import pino from "pino";
+import { prisma } from "@/lib/prisma";
+import { broadcastTip } from "@/lib/websocketServer";
 
 const logger = pino({
   transport: {
@@ -22,8 +23,6 @@ const logger = pino({
     },
   },
 });
-
-const prisma = new PrismaClient();
 
 // Program ID - replace with actual deployed program ID
 const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID || "11111111111111111111111111111111");
@@ -99,10 +98,21 @@ async function handleTipSent(event: TipSentEvent) {
   logger.info({ event }, "TipSent event received");
 
   try {
+    const recipient =
+      (await prisma.user.findUnique({
+        where: { walletAddress: event.creator },
+      })) ||
+      (await prisma.user.create({
+        data: {
+          username: event.creator.slice(0, 8),
+          walletAddress: event.creator,
+        },
+      }));
+
     const tip = await prisma.tip.create({
       data: {
         donorWalletAddress: event.tipper,
-        recipientId: event.creator,
+        recipientId: recipient.id,
         amount: (event.amount / 1_000_000_000).toString(),
         message: "Tip via blockchain",
         transactionHash: `${event.timestamp}-${event.tipper}-${event.creator}`, // Placeholder
@@ -110,6 +120,14 @@ async function handleTipSent(event: TipSentEvent) {
         creatorAmount: (event.creator_amount / 1_000_000_000).toString(),
         confirmationStatus: "finalized",
       },
+    });
+
+    broadcastTip(recipient.username, {
+      id: tip.id,
+      donorName: tip.donorWalletAddress,
+      amount: Number(tip.amount),
+      message: tip.message,
+      timestamp: tip.createdAt.toISOString(),
     });
 
     logger.info({ tipId: tip.id }, "Tip recorded");
@@ -159,6 +177,7 @@ export async function startEventListener() {
  * Graceful shutdown
  */
 export async function stopEventListener(logsSubscription: number) {
+  void logsSubscription;
   await prisma.$disconnect();
   logger.info("Event listener stopped");
 }

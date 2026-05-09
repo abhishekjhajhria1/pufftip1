@@ -104,7 +104,7 @@ export function broadcastTip(creatorId: string, tipData: Record<string, unknown>
 
   let broadcastCount = 0;
 
-  connectedClients.forEach((client, clientId) => {
+  connectedClients.forEach((client) => {
     if (client.subscriptions.has(creatorId) && client.ws.readyState === WebSocket.OPEN) {
       client.ws.send(message);
       broadcastCount++;

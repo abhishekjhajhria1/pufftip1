@@ -18,6 +18,7 @@ import { showNotificationFromWebSocket } from '../components/NotificationManager
  * });
  */
 export function useNotificationManager(creatorId?: string) {
+  void creatorId;
   const showNotification = useCallback(
     (tip: Tip) => {
       showNotificationFromWebSocket(tip);

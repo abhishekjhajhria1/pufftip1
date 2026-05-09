@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import React from 'react';
 import { Tip, ContentStyle } from './types';
@@ -22,19 +23,19 @@ export const SimpleContentRenderer: React.FC<{ tip: Tip }> = ({ tip }) => (
  * RichContentRenderer - Full card with avatar and details
  */
 export const RichContentRenderer: React.FC<{ tip: Tip }> = ({ tip }) => (
-  <HStack gap={4} width="100%">
-    {tip.avatar && (
-      <img
-        src={tip.avatar}
-        alt={tip.donorName}
-        style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '50%',
-          objectFit: 'cover'
-        }}
-      />
-    )}
+    <HStack gap={4} width="100%">
+      {tip.avatar && (
+        <img
+          src={tip.avatar}
+          alt={tip.donorName}
+          style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '50%',
+            objectFit: 'cover'
+          }}
+        />
+      )}
     <VStack align="start" gap={1} flex={1}>
       <HStack justify="space-between" width="100%">
         <Text fontWeight="bold">{tip.donorName}</Text>
@@ -121,4 +122,6 @@ export function getContentRenderer(style: ContentStyle, tip: Tip): React.ReactNo
   }
 }
 
-export default { SimpleContentRenderer, RichContentRenderer, LuxeContentRenderer, getContentRenderer };
+const ContentRenderers = { SimpleContentRenderer, RichContentRenderer, LuxeContentRenderer, getContentRenderer };
+
+export default ContentRenderers;

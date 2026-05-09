@@ -1,12 +1,11 @@
 import { Box, VStack, Heading, Text, Button, Container, Spinner, HStack, Badge, useDisclosure } from "@chakra-ui/react";
 import { FiCheck, FiAlertCircle, FiBell } from "react-icons/fi";
 import { useRouter } from "next/router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { TipForm } from "@/components/TipForm";
 import { useWebSocketTips } from "@/hooks/useWebSocketTips";
-import { NotificationManager, setNotificationManager } from "@/components/NotificationManager";
+import { NotificationManager } from "@/components/NotificationManager";
 import { NotificationSettings } from "@/components/NotificationSettings";
-import type { Tip as NotificationTip } from "@/components/notifications/types";
 
 interface Creator {
   user: {
@@ -34,8 +33,7 @@ interface Tip {
 export default function UserPublicPage() {
   const router = useRouter();
   const { username } = router.query;
-  const { isOpen: isSettingsOpen, onOpen: onSettingsOpen, onClose: onSettingsClose } = useDisclosure();
-  const notificationTriggerRef = useRef<((tip: NotificationTip) => void) | null>(null);
+  const { open: isSettingsOpen, onOpen: onSettingsOpen, onClose: onSettingsClose } = useDisclosure();
 
   const [creator, setCreator] = useState<Creator | null>(null);
   const [tips, setTips] = useState<Tip[]>([]);
@@ -44,33 +42,9 @@ export default function UserPublicPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Real-time WebSocket integration
-  const { isConnected, latestTip } = useWebSocketTips(
+  const { isConnected } = useWebSocketTips(
     typeof username === "string" ? username : ""
   );
-
-  // Initialize notification manager
-  useEffect(() => {
-    setNotificationManager((tip: NotificationTip) => {
-      if (notificationTriggerRef.current) {
-        notificationTriggerRef.current(tip);
-      }
-    });
-  }, []);
-
-  // Trigger notification when new tip arrives via WebSocket
-  useEffect(() => {
-    if (latestTip && notificationTriggerRef.current) {
-      const notificationTip: NotificationTip = {
-        id: latestTip.id,
-        donorName: latestTip.donorName || "Anonymous",
-        amount: parseFloat(latestTip.amount),
-        message: latestTip.message || "",
-        timestamp: new Date(latestTip.createdAt),
-        avatar: undefined, // Could be enhanced with donor avatar
-      };
-      notificationTriggerRef.current(notificationTip);
-    }
-  }, [latestTip]);
 
   useEffect(() => {
     if (!username || typeof username !== "string") return;
@@ -169,7 +143,7 @@ export default function UserPublicPage() {
             <Heading as="h1" size="2xl">
               {creator.user.displayName || creator.user.username}
             </Heading>
-            {creator.user.isPremium && <Badge colorScheme="gold">Premium</Badge>}
+            {creator.user.isPremium && <Badge colorScheme="yellow">Premium</Badge>}
           </HStack>
           {creator.user.bio && (
             <Text color="gray.600" mb={2}>
@@ -181,12 +155,12 @@ export default function UserPublicPage() {
           </Text>
           {/* Settings Button */}
           <Button
-            leftIcon={<FiBell />}
             colorScheme="purple"
             variant="outline"
             size="sm"
             onClick={onSettingsOpen}
           >
+            <FiBell style={{ marginRight: "8px" }} />
             Notification Settings
           </Button>
         </Box>

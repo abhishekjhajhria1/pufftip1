@@ -65,7 +65,9 @@ export function useWebSocketTips(
         ws.send(
           JSON.stringify({
             type: "subscribe",
-            creator: creatorUsername,
+            payload: {
+              creatorId: creatorUsername,
+            },
           })
         );
       };
@@ -76,11 +78,12 @@ export function useWebSocketTips(
 
           // Handle different message types
           if (data.type === "tip") {
+            const payload = data.data || data;
             const newTip: TipNotification = {
-              id: data.id,
-              donorName: data.donorName || "Anonymous",
-              amount: data.amount,
-              message: data.message,
+              id: payload.id,
+              donorName: payload.donorName || "Anonymous",
+              amount: payload.amount,
+              message: payload.message,
               timestamp: new Date().toISOString(),
             };
 

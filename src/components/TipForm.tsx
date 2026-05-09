@@ -19,9 +19,8 @@ import {
   Textarea,
   VStack,
   Text,
-  Alert,
 } from "@chakra-ui/react";
-import { FiCheck, FiAlertCircle } from "react-icons/fi";
+import { FiAlertCircle } from "react-icons/fi";
 import { useState } from "react";
 
 interface TipFormProps {
@@ -114,7 +113,7 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to send tip");
+        throw new Error(errorData.error || errorData.message || "Failed to send tip");
       }
 
       // Reset form on success

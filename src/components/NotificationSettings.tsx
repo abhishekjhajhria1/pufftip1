@@ -11,7 +11,7 @@ import {
   Heading,
 } from '@chakra-ui/react';
 import { useNotificationSettings } from '../hooks/useNotificationSettings';
-import { useNotificationAudio, BUILT_IN_SOUNDS, SoundType } from '../hooks/useNotificationAudio';
+import { useNotificationAudio, BUILT_IN_SOUNDS } from '../hooks/useNotificationAudio';
 
 interface NotificationSettingsProps {
   creatorId?: string;
@@ -25,8 +25,11 @@ interface NotificationSettingsProps {
  */
 export const NotificationSettings: React.FC<NotificationSettingsProps> = ({ creatorId, isOpen, onClose }) => {
   const { preferences, updatePreferences } = useNotificationSettings(creatorId);
-  const { volume, changeVolume, play } = useNotificationAudio(creatorId);
+  const { volume, changeVolume, play, soundType, changeSoundType, toggleMute, isMuted, getCurrentSoundName } = useNotificationAudio(creatorId);
   const [newTier, setNewTier] = useState({ minAmount: 50, durationMs: 10000 });
+  const builtInSoundEntries = Object.entries(BUILT_IN_SOUNDS) as Array<
+    [keyof typeof BUILT_IN_SOUNDS, (typeof BUILT_IN_SOUNDS)[keyof typeof BUILT_IN_SOUNDS]]
+  >;
 
   const handleTypeToggle = (type: 'toast' | 'modal' | 'banner' | 'slide-in') => {
     const newTypes = preferences.types.includes(type) ? preferences.types.filter((t) => t !== type) : [...preferences.types, type];
@@ -133,6 +136,25 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({ crea
             <Button marginTop={2} width="100%" onClick={() => play()}>
               🔊 Test Sound
             </Button>
+          </Box>
+
+          <Box width="100%">
+            <Text fontWeight="bold" marginBottom={2}>Selected Sound: {getCurrentSoundName()}</Text>
+            <VStack align="stretch" gap={2}>
+              {builtInSoundEntries.map(([type, sound]) => (
+                <Button
+                  key={type}
+                  variant={soundType === type ? 'solid' : 'outline'}
+                  colorScheme={soundType === type ? 'purple' : undefined}
+                  onClick={() => changeSoundType(type)}
+                >
+                  {sound.name}
+                </Button>
+              ))}
+              <Button variant={isMuted ? 'solid' : 'outline'} onClick={toggleMute}>
+                {isMuted ? 'Unmute' : 'Mute'}
+              </Button>
+            </VStack>
           </Box>
 
           {/* Stacking Mode */}

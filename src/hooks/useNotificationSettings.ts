@@ -56,7 +56,6 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
  *
  * Features:
  * - Loads from localStorage (instant)
- * - Syncs to database in background
  * - Falls back to defaults if nothing saved
  * - Handles errors gracefully
  *
@@ -88,10 +87,10 @@ export function useNotificationSettings(creatorId?: string) {
   }, [STORAGE_KEY]);
 
   /**
-   * Update preferences - saves to localStorage instantly, syncs to DB
+   * Update preferences - saves to localStorage instantly
    */
   const updatePreferences = useCallback(
-    async (updates: Partial<NotificationPreferences>) => {
+    (updates: Partial<NotificationPreferences>) => {
       try {
         const newPrefs = { ...preferences, ...updates };
         setPreferences(newPrefs);
@@ -100,19 +99,12 @@ export function useNotificationSettings(creatorId?: string) {
         // Save to localStorage immediately (instant)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newPrefs));
 
-        // Sync to database in background if creatorId provided
-        if (creatorId) {
-          syncToDatabase(creatorId, newPrefs).catch((err) => {
-            console.warn('Failed to sync settings to database:', err);
-            // Don't show error to user - localStorage saves are sufficient
-          });
-        }
       } catch (err) {
         console.error('Failed to update notification settings:', err);
         setError('Failed to save settings');
       }
     },
-    [preferences, creatorId, STORAGE_KEY]
+    [preferences, STORAGE_KEY]
   );
 
   /**
@@ -134,12 +126,7 @@ export function useNotificationSettings(creatorId?: string) {
   const resetToDefaults = useCallback(() => {
     setPreferences(DEFAULT_PREFERENCES);
     localStorage.removeItem(STORAGE_KEY);
-    if (creatorId) {
-      syncToDatabase(creatorId, DEFAULT_PREFERENCES).catch((err) => {
-        console.warn('Failed to reset settings in database:', err);
-      });
-    }
-  }, [creatorId, STORAGE_KEY]);
+  }, [STORAGE_KEY]);
 
   return {
     preferences,
@@ -150,29 +137,3 @@ export function useNotificationSettings(creatorId?: string) {
     error,
   };
 }
-
-/**
- * Sync preferences to backend database
- * Non-blocking - failures don't prevent UI updates
- */
-async function syncToDatabase(creatorId: string, preferences: NotificationPreferences) {
-  try {
-    const response = await fetch('/api/creators/settings/notifications', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        creatorId,
-        preferences,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to sync settings: ${response.statusText}`);
-    }
-  } catch (err) {
-    console.error('Database sync error:', err);
-    throw err;
-  }
-}
-
-export type { NotificationPreferences };

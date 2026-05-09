@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Text } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 
 /**
  * CoinAnimationRenderer - Animated SOL coin cascade

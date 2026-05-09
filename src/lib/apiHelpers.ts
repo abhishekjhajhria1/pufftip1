@@ -5,13 +5,11 @@
  * Each route handles specific business logic.
  */
 
-import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
-
-const prisma = new PrismaClient();
+import { randomBytes } from "crypto";
 
 /**
  * Helper: Verify wallet signature
@@ -118,6 +116,10 @@ export async function createTip(
   donorWalletAddress?: string
 ) {
   try {
+    if (!Number.isFinite(amountSol) || amountSol <= 0) {
+      throw new Error("Amount must be greater than 0");
+    }
+
     // Verify recipient exists
     const recipient = await prisma.user.findUnique({
       where: { username: recipientUsername },
@@ -171,7 +173,7 @@ export async function generateNonce(walletAddress: string) {
     new PublicKey(walletAddress);
 
     // Generate random nonce
-    const nonce = Math.random().toString(36).substring(2, 15);
+    const nonce = randomBytes(16).toString("hex");
 
     // Store in cache or database (in production, use Redis)
     // For now, we'll return it directly

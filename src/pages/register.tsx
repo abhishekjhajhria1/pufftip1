@@ -2,12 +2,14 @@ import { VStack, Heading, Text, Button, Input, Container, Textarea } from "@chak
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { setStoredCreator } from "@/lib/creatorStorage";
 
 export default function Register() {
   const { connected, publicKey } = useWallet();
   const router = useRouter();
   
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -17,12 +19,15 @@ export default function Register() {
 
   const handleRegister = async () => {
     if (!connected || !publicKey) return;
+    setError(null);
 
     if (!formData.username.trim()) {
+      setError("Username is required");
       return;
     }
 
     if (formData.username.length < 3) {
+      setError("Username must be at least 3 characters");
       return;
     }
 
@@ -38,14 +43,15 @@ export default function Register() {
         walletAddress: publicKey.toString(),
       };
 
-      // Store in browser for demo
-      localStorage.setItem("creator", JSON.stringify(creatorData));
+      setStoredCreator(creatorData);
+      setError(null);
 
 
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (error) {
       console.error("Registration failed:", error);
+      setError("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -66,10 +72,16 @@ export default function Register() {
 
   return (
     <Container maxW="container.sm" py={20}>
-      <VStack gap={6} alignItems="stretch">
-        <Heading as="h1" size="2xl" textAlign="center">
-          Register as Creator
-        </Heading>
+        <VStack gap={6} alignItems="stretch">
+          <Heading as="h1" size="2xl" textAlign="center">
+            Register as Creator
+          </Heading>
+
+          {error && (
+            <Text color="red.500" textAlign="center">
+              {error}
+            </Text>
+          )}
 
         <div>
           <Text mb={2} fontWeight="bold">Username *</Text>

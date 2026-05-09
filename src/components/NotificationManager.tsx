@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Box } from '@chakra-ui/react';
 import { useNotificationSettings } from '../hooks/useNotificationSettings';
 import { useNotificationAudio } from '../hooks/useNotificationAudio';
@@ -89,6 +89,11 @@ export const NotificationManager: React.FC<NotificationManagerProps> = ({ creato
   const handleDismiss = useCallback((notificationId: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
   }, []);
+
+  useEffect(() => {
+    setNotificationManager(handleShowNotification);
+    return () => setNotificationManager(() => {});
+  }, [handleShowNotification]);
 
   // Show animations based on content style
   const shouldShowConfetti = preferences.contentStyle === 'confetti' || preferences.contentStyle === 'all';
