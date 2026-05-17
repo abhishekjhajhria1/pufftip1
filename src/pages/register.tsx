@@ -49,13 +49,13 @@ function StepIndicator({ step, current }: { step: number; current: number }) {
         fontWeight="700"
         bg={
           isComplete
-            ? "linear-gradient(135deg, #22c55e, #16a34a)"
+            ? "brand.markerGreen"
             : isActive
-            ? "linear-gradient(135deg, #7928CA, #FF0080)"
-            : "whiteAlpha.100"
+            ? "brand.markerYellow"
+            : "transparent"
         }
-        color={isComplete || isActive ? "white" : "whiteAlpha.400"}
-        border={isActive ? "none" : "1px solid rgba(255,255,255,0.1)"}
+        color={isComplete || isActive ? "brand.ink" : "brand.inkSoft"}
+        border={isActive || isComplete ? "2px solid var(--theme-text)" : "2px dashed var(--theme-text-soft)"}
         transition="all 0.3s"
       >
         {isComplete ? <FiCheck size={14} /> : step}
@@ -133,27 +133,27 @@ export default function Register() {
         <meta name="description" content="Create your PuffTip creator profile and start receiving tips in SOL." />
       </Head>
 
-      <Container maxW="container.sm" py={{ base: 12, md: 20 }}>
+      <Container maxW="container.sm" py="var(--section-py)">
         <VStack gap={8} alignItems="center">
           {/* Step Indicators */}
           <HStack gap={4}>
             <StepIndicator step={1} current={currentStep} />
-            <Box w={8} h="1px" bg="whiteAlpha.200" />
+            <Box w={8} h="2px" bg="var(--theme-card-border)" borderRadius="full" />
             <StepIndicator step={2} current={currentStep} />
-            <Box w={8} h="1px" bg="whiteAlpha.200" />
+            <Box w={8} h="2px" bg="var(--theme-card-border)" borderRadius="full" />
             <StepIndicator step={3} current={currentStep} />
           </HStack>
 
           {/* Step Labels */}
-          <HStack gap={6} fontSize="xs" color="whiteAlpha.400">
-            <Text color={currentStep >= 1 ? "whiteAlpha.700" : undefined}>Connect</Text>
-            <Text color={currentStep >= 2 ? "whiteAlpha.700" : undefined}>Profile</Text>
-            <Text color={currentStep >= 3 ? "whiteAlpha.700" : undefined}>Done</Text>
+          <HStack gap={6} fontSize="xs" color="brand.inkSoft" fontFamily="body" fontWeight="bold">
+            <Text color={currentStep >= 1 ? "brand.ink" : undefined}>Connect</Text>
+            <Text color={currentStep >= 2 ? "brand.ink" : undefined}>Profile</Text>
+            <Text color={currentStep >= 3 ? "brand.ink" : undefined}>Done</Text>
           </HStack>
 
           {/* Main Card */}
           <MotionBox
-            className="glass-strong"
+            className="paper-card"
             p={{ base: 6, md: 8 }}
             w="full"
             maxW="460px"
@@ -167,25 +167,29 @@ export default function Register() {
                 <Box
                   p={4}
                   borderRadius="full"
-                  bg="whiteAlpha.50"
+                  bg="brand.markerPink"
+                  border="2px solid"
+                  borderColor="brand.ink"
                   display="inline-flex"
+                  className="rotate-doodle-1"
                 >
-                  <FiUser size={32} color="#7928CA" />
+                  <FiUser size={32} color="var(--theme-text)" />
                 </Box>
-                <Heading as="h1" size="lg" color="white" fontFamily="'Fredoka', sans-serif">
-                  Connect Your Wallet
+                <Heading as="h1" size="xl" color="brand.ink" fontFamily="heading">
+                  connect your wallet
                 </Heading>
-                <Text color="whiteAlpha.500" fontSize="sm" lineHeight="1.7">
+                <Text color="brand.inkSoft" fontSize="md" lineHeight="1.7" fontFamily="body">
                   Connect your Solana wallet using the button in the header to get started.
-                  We use wallet signatures for authentication — no passwords needed.
+                  Authentication is on-chain — no passwords, no emails. Just your wallet.
                 </Text>
                 <Button
                   variant="outline"
-                  color="whiteAlpha.700"
-                  borderColor="whiteAlpha.200"
-                  _hover={{ bg: "whiteAlpha.100" }}
+                  color="brand.ink"
+                  borderColor="brand.ink"
+                  _hover={{ bg: "brand.paperDeep" }}
                   onClick={() => router.push("/")}
-                  borderRadius="xl"
+                  borderRadius="md"
+                  fontFamily="body"
                 >
                   ← Back to Home
                 </Button>
@@ -196,29 +200,30 @@ export default function Register() {
             {connected && !success && (
               <VStack gap={6} alignItems="stretch">
                 <VStack gap={1} textAlign="center">
-                  <Heading as="h1" size="lg" color="white" fontFamily="'Fredoka', sans-serif">
-                    Create Your Profile
+                  <Heading as="h1" size="xl" color="brand.ink" fontFamily="heading">
+                    create your profile
                   </Heading>
-                  <Text color="whiteAlpha.500" fontSize="sm">
-                    Set up your creator page and start receiving tips
+                  <Text color="brand.inkSoft" fontSize="md" fontFamily="body">
+                    Set up your creator page and start receiving SOL tips on stream
                   </Text>
                 </VStack>
 
                 {error && (
                   <Box
                     p={3}
-                    borderRadius="lg"
-                    bg="rgba(239, 68, 68, 0.1)"
-                    border="1px solid rgba(239, 68, 68, 0.2)"
+                    borderRadius="md"
+                    bg="brand.markerRed"
+                    border="2px solid"
+                    borderColor="brand.ink"
                   >
-                    <Text fontSize="sm" color="red.300">{error}</Text>
+                    <Text fontSize="sm" color="brand.paper" fontWeight="bold">{error}</Text>
                   </Box>
                 )}
 
                 {/* Username */}
                 <Box>
-                  <Text mb={2} fontWeight="600" fontSize="sm" color="whiteAlpha.800">
-                    Username <span style={{ color: "#FF0080" }}>*</span>
+                  <Text mb={2} fontWeight="600" fontSize="sm" color="brand.ink" fontFamily="body">
+                    Username <span style={{ color: "var(--theme-marker-red)" }}>*</span>
                   </Text>
                   <Input
                     placeholder="yourname"
@@ -227,14 +232,14 @@ export default function Register() {
                     disabled={loading}
                     size="lg"
                   />
-                  <Text fontSize="xs" color="whiteAlpha.400" mt={1}>
+                  <Text fontSize="xs" color="brand.inkSoft" mt={1} fontFamily="body">
                     Your tip page: pufftip.com/u/{formData.username || "yourname"}
                   </Text>
                 </Box>
 
                 {/* Display Name */}
                 <Box>
-                  <Text mb={2} fontWeight="600" fontSize="sm" color="whiteAlpha.800">
+                  <Text mb={2} fontWeight="600" fontSize="sm" color="brand.ink" fontFamily="body">
                     Display Name
                   </Text>
                   <Input
@@ -248,7 +253,7 @@ export default function Register() {
 
                 {/* Bio */}
                 <Box>
-                  <Text mb={2} fontWeight="600" fontSize="sm" color="whiteAlpha.800">
+                  <Text mb={2} fontWeight="600" fontSize="sm" color="brand.ink" fontFamily="body">
                     Bio
                   </Text>
                   <Textarea
@@ -263,20 +268,22 @@ export default function Register() {
                 {/* Submit */}
                 <Button
                   size="lg"
-                  bg="linear-gradient(135deg, #7928CA 0%, #FF0080 100%)"
-                  color="white"
-                  _hover={{ opacity: 0.9, transform: "translateY(-1px)" }}
+                  bg="brand.ink"
+                  color="brand.paper"
+                  _hover={{ opacity: 0.9, transform: "rotate(var(--theme-rot-1))" }}
                   transition="all 0.3s"
-                  borderRadius="xl"
+                  borderRadius="md"
                   onClick={handleRegister}
                   loading={loading}
-                  boxShadow="0 4px 20px rgba(121, 40, 202, 0.3)"
+                  className="shadow-sticker"
+                  fontFamily="heading"
+                  fontSize="xl"
                 >
-                  🍃 Create Profile
+                  🍃 create profile
                 </Button>
 
                 {/* Wallet Info */}
-                <Text fontSize="xs" color="whiteAlpha.400" textAlign="center">
+                <Text fontSize="xs" color="brand.inkSoft" textAlign="center" fontFamily="body">
                   Wallet: {publicKey?.toString().slice(0, 8)}...{publicKey?.toString().slice(-4)}
                 </Text>
               </VStack>
@@ -293,15 +300,18 @@ export default function Register() {
                   <Box
                     p={4}
                     borderRadius="full"
-                    bg="rgba(34, 197, 94, 0.1)"
+                    bg="brand.markerGreen"
+                    border="2px solid"
+                    borderColor="brand.ink"
                     display="inline-flex"
+                    className="rotate-doodle-2"
                   >
-                    <FiEdit3 size={32} color="#22c55e" />
+                    <FiEdit3 size={32} color="var(--theme-text)" />
                   </Box>
-                  <Heading size="md" color="white" fontFamily="'Fredoka', sans-serif">
-                    You&apos;re In! 🎉
+                  <Heading size="xl" color="brand.ink" fontFamily="heading">
+                    you&apos;re in! 🎉
                   </Heading>
-                  <Text color="whiteAlpha.500" fontSize="sm">
+                  <Text color="brand.inkSoft" fontSize="md" fontFamily="body">
                     Redirecting to your dashboard...
                   </Text>
                 </VStack>

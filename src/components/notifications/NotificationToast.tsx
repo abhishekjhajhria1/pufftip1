@@ -49,7 +49,7 @@ export const NotificationToast: React.FC<NotificationRendererProps> = ({ tip, du
         }}
       >
         <Box
-          bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+          bg="linear-gradient(135deg, #9945FF 0%, #14F195 100%)"
           borderRadius="lg"
           padding={4}
           boxShadow="0 10px 25px rgba(0,0,0,0.2)"

@@ -1,234 +1,253 @@
 /**
- * Layout Component
+ * Layout Component — Premium Edition
  *
- * Global page wrapper providing:
- * - Animated dark background
- * - Sticky header with nav links + wallet button
- * - Footer with branding
+ * - Glassmorphic sticky header with mobile hamburger drawer
+ * - Full nav on desktop, slide-in drawer on mobile
+ * - Multi-column footer with Solana branding
  * - Smooth page transitions via framer-motion
- *
- * Every page is rendered inside this layout via _app.tsx.
  */
 
-import { Box, Container, HStack, Text, Button } from "@chakra-ui/react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { Box, Container, HStack, Text, Button, Grid, GridItem, VStack } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useTheme } from "@/components/ThemeProvider";
+import { FiMenu, FiX, FiHome, FiSearch, FiMonitor, FiDollarSign, FiLayout } from "react-icons/fi";
+
+const WalletMultiButton = dynamic(
+  () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-/**
- * Animated background with floating orbs — gives the whole app
- * a premium feel without using the heavier Background.tsx component.
- */
-function AnimatedBackground() {
-  return (
-    <Box
-      position="fixed"
-      inset={0}
-      zIndex={0}
-      overflow="hidden"
-      pointerEvents="none"
-    >
-      {/* Base gradient */}
-      <Box
-        position="absolute"
-        inset={0}
-        bg="linear-gradient(135deg, #0a0015 0%, #1a0b2e 40%, #0d001a 100%)"
-      />
+const NAV_LINKS = [
+  { label: "home", href: "/", icon: <FiHome size={16} /> },
+  { label: "explore", href: "/explore", icon: <FiSearch size={16} /> },
+  { label: "dashboard", href: "/dashboard", icon: <FiLayout size={16} /> },
+  { label: "obs setup", href: "/obs", icon: <FiMonitor size={16} /> },
+  { label: "fees", href: "/pricing", icon: <FiDollarSign size={16} /> },
+];
 
-      {/* Floating orb 1 — purple */}
-      <motion.div
-        style={{
-          position: "absolute",
-          top: "10%",
-          left: "15%",
-          width: "400px",
-          height: "400px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(121,40,202,0.15) 0%, transparent 70%)",
-          filter: "blur(60px)",
-        }}
-        animate={{
-          x: [0, 50, -30, 0],
-          y: [0, -40, 20, 0],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* Floating orb 2 — pink */}
-      <motion.div
-        style={{
-          position: "absolute",
-          bottom: "20%",
-          right: "10%",
-          width: "350px",
-          height: "350px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(255,0,128,0.12) 0%, transparent 70%)",
-          filter: "blur(60px)",
-        }}
-        animate={{
-          x: [0, -40, 30, 0],
-          y: [0, 30, -50, 0],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* Floating orb 3 — cyan */}
-      <motion.div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "60%",
-          width: "300px",
-          height: "300px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(0,191,255,0.08) 0%, transparent 70%)",
-          filter: "blur(60px)",
-        }}
-        animate={{
-          x: [0, 30, -20, 0],
-          y: [0, -30, 40, 0],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* Noise overlay for texture */}
-      <Box
-        position="absolute"
-        inset={0}
-        opacity={0.03}
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-    </Box>
-  );
-}
-
-/**
- * Navigation bar — sticky top, glassmorphism style
- */
 function Navbar() {
-  const { connected } = useWallet();
   const router = useRouter();
-
-  const navLinks = [
-    { label: "Home", href: "/" },
-    ...(connected
-      ? [
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Register", href: "/register" },
-        ]
-      : []),
-  ];
+  const { theme, toggleTheme } = useTheme();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <Box
-      as="header"
-      position="sticky"
-      top={0}
-      zIndex={100}
-      py={3}
-      px={4}
-      bg="rgba(10, 0, 21, 0.7)"
-      backdropFilter="blur(16px)"
-      borderBottom="1px solid rgba(255,255,255,0.06)"
-    >
-      <Container maxW="container.xl">
-        <HStack justifyContent="space-between" alignItems="center">
-          {/* Logo */}
-          <Link href="/" style={{ textDecoration: "none" }}>
-            <HStack gap={2} cursor="pointer">
-              <Text fontSize="xl" fontFamily="'Bangers', system-ui" letterSpacing="1px">
-                <span className="gradient-text">🍃 PuffTip</span>
+    <>
+      <Box
+        as="header"
+        position="sticky"
+        top={0}
+        zIndex={100}
+        py={3}
+        px={4}
+        bg="var(--theme-nav-bg)"
+        backdropFilter="blur(16px)"
+        borderBottom="var(--theme-nav-border)"
+        transition="background 0.4s ease"
+      >
+        <Container maxW="container.xl">
+          <HStack justifyContent="space-between" alignItems="center">
+            {/* Logo */}
+            <Link href="/" style={{ textDecoration: "none" }}>
+              <Text fontSize="xl" fontFamily="heading" fontWeight="700" color="brand.ink" position="relative">
+                pufftip<Box as="span" className="solana-gradient">.</Box>
               </Text>
-            </HStack>
-          </Link>
+            </Link>
 
-          {/* Nav Links */}
-          <HStack gap={1} display={{ base: "none", md: "flex" }}>
-            {navLinks.map((link) => (
+            {/* Desktop Nav */}
+            <HStack gap={1} className="hide-mobile">
+              {NAV_LINKS.map((link) => {
+                const isActive = router.pathname === link.href;
+                return (
+                  <Button
+                    key={link.href}
+                    variant="ghost"
+                    size="sm"
+                    color={isActive ? "brand.ink" : "brand.inkSoft"}
+                    fontFamily="heading"
+                    fontSize="sm"
+                    fontWeight={isActive ? "700" : "500"}
+                    _hover={{ color: "brand.ink", bg: "transparent" }}
+                    onClick={() => router.push(link.href)}
+                    borderRadius="md"
+                    px={3}
+                    py={1}
+                    transition="all 0.2s"
+                    minH="auto"
+                    h="auto"
+                    position="relative"
+                  >
+                    {link.label}
+                    {isActive && (
+                      <Box
+                        position="absolute"
+                        bottom="-2px"
+                        left="20%"
+                        right="20%"
+                        h="2px"
+                        className="solana-accent"
+                        borderRadius="full"
+                      />
+                    )}
+                  </Button>
+                );
+              })}
+            </HStack>
+
+            {/* Right side */}
+            <HStack gap={3}>
               <Button
-                key={link.href}
+                title={theme === "notebook" ? "Switch to Studio" : "Switch to Notebook"}
+                onClick={toggleTheme}
                 variant="ghost"
                 size="sm"
-                color={router.pathname === link.href ? "white" : "whiteAlpha.700"}
-                fontWeight={router.pathname === link.href ? "700" : "400"}
-                _hover={{ color: "white", bg: "whiteAlpha.100" }}
-                onClick={() => router.push(link.href)}
-                borderRadius="lg"
-                fontSize="sm"
+                color="brand.inkSoft"
+                fontFamily="heading"
+                fontSize="xs"
+                _hover={{ color: "brand.ink" }}
+                className="hide-mobile"
               >
-                {link.label}
+                {theme === "notebook" ? "✨ studio" : "✎ notebook"}
               </Button>
-            ))}
+              <WalletMultiButton />
+
+              {/* Mobile hamburger */}
+              <Button
+                variant="ghost"
+                size="sm"
+                color="brand.ink"
+                onClick={() => setDrawerOpen(true)}
+                className="hide-desktop"
+                p={1}
+                minW="auto"
+              >
+                <FiMenu size={22} />
+              </Button>
+            </HStack>
+          </HStack>
+        </Container>
+      </Box>
+
+      {/* Mobile Drawer */}
+      <Box className={`mobile-drawer-overlay ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(false)} />
+      <Box className={`mobile-drawer ${drawerOpen ? "open" : ""}`}>
+        <VStack align="stretch" py={4} gap={0}>
+          {/* Close button */}
+          <HStack justifyContent="space-between" px={5} mb={4}>
+            <Text fontFamily="heading" fontWeight="700" color="brand.ink" fontSize="lg">
+              pufftip<Box as="span" className="solana-gradient">.</Box>
+            </Text>
+            <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(false)} color="brand.ink" p={1} minW="auto">
+              <FiX size={20} />
+            </Button>
           </HStack>
 
-          {/* Wallet Button */}
-          <WalletMultiButton />
-        </HStack>
-      </Container>
-    </Box>
+          {/* Nav Links */}
+          {NAV_LINKS.map((link) => {
+            const isActive = router.pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`mobile-drawer-link ${isActive ? "active" : ""}`}
+                onClick={() => setDrawerOpen(false)}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            );
+          })}
+
+          {/* Theme toggle */}
+          <Box px={5} mt={4}>
+            <Button
+              onClick={() => { toggleTheme(); setDrawerOpen(false); }}
+              variant="outline"
+              size="sm"
+              w="full"
+              color="brand.inkSoft"
+              borderColor="brand.inkSoft"
+              fontFamily="heading"
+              _hover={{ bg: "brand.paperDeep" }}
+            >
+              {theme === "notebook" ? "✨ switch to studio" : "✎ switch to notebook"}
+            </Button>
+          </Box>
+        </VStack>
+      </Box>
+    </>
   );
 }
 
-/**
- * Footer — simple, branded
- */
 function Footer() {
   return (
-    <Box
-      as="footer"
-      py={6}
-      px={4}
-      borderTop="1px solid rgba(255,255,255,0.06)"
-      bg="rgba(10, 0, 21, 0.5)"
-    >
+    <Box as="footer" className="site-footer" py={12} px={4} mt={10}>
       <Container maxW="container.xl">
-        <HStack justifyContent="space-between" flexWrap="wrap" gap={4}>
-          <Text fontSize="sm" color="whiteAlpha.500">
-            © 2026 PuffTip — Built on Solana
-          </Text>
-          <HStack gap={4}>
-            <Text fontSize="xs" color="whiteAlpha.400">Devnet</Text>
+        <Grid templateColumns={{ base: "1fr", md: "2fr 1fr 1fr" }} gap={{ base: 8, md: 12 }}>
+          <GridItem>
+            <Text fontFamily="heading" fontSize="xl" fontWeight="700" color="brand.ink" mb={3}>
+              pufftip<Box as="span" className="solana-gradient">.</Box>
+            </Text>
+            <Text color="brand.inkSoft" fontSize="sm" fontFamily="body" maxW="300px" lineHeight="1.7">
+              the next-gen Solana tipping platform for streamers. instant payments, real-time OBS alerts, zero middlemen.
+            </Text>
+            <Box mt={3} className="solana-badge" display="inline-flex">◎ Powered by Solana</Box>
+          </GridItem>
+
+          <GridItem>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Navigate</Text>
+            <VStack alignItems="flex-start" gap={2}>
+              {[
+                { label: "explore streamers", href: "/explore" },
+                { label: "creator dashboard", href: "/dashboard" },
+                { label: "obs setup guide", href: "/obs" },
+                { label: "fees & pricing", href: "/pricing" },
+              ].map((link) => (
+                <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
+              ))}
+            </VStack>
+          </GridItem>
+
+          <GridItem>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Platform</Text>
+            <VStack alignItems="flex-start" gap={2}>
+              <Text fontSize="sm" color="brand.inkSoft" fontFamily="body">built on Solana</Text>
+              <Text fontSize="sm" color="brand.inkSoft" fontFamily="body">no signups to browse</Text>
+              <Text fontSize="sm" color="brand.inkSoft" fontFamily="body">open for creators</Text>
+              <Box px={3} py={1} border="1px solid" borderColor="brand.inkSoft" borderRadius="md" mt={1}>
+                <Text fontSize="xs" color="brand.ink" fontFamily="body" fontWeight="700">Devnet</Text>
+              </Box>
+            </VStack>
+          </GridItem>
+        </Grid>
+
+        <Box mt={10} pt={6} borderTop="1px solid" borderColor="var(--theme-card-border)">
+          <HStack justifyContent="space-between" flexWrap="wrap" gap={4}>
+            <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">
+              © 2026 PuffTip. built with <Box as="span" className="solana-gradient">Solana</Box>.
+            </Text>
+            <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">devnet — no real money.</Text>
           </HStack>
-        </HStack>
+        </Box>
       </Container>
     </Box>
   );
 }
 
-/**
- * Main Layout — wraps every page
- */
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
 
   return (
     <Box position="relative" minH="100vh" display="flex" flexDirection="column">
-      <AnimatedBackground />
-
       <Box position="relative" zIndex={1} display="flex" flexDirection="column" flex={1}>
         <Navbar />
-
         <Box as="main" flex={1}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -236,13 +255,12 @@ export default function Layout({ children }: LayoutProps) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               {children}
             </motion.div>
           </AnimatePresence>
         </Box>
-
         <Footer />
       </Box>
     </Box>

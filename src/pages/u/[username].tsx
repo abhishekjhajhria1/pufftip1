@@ -5,18 +5,12 @@
  * URL: /u/[username]
  *
  * Features:
- * - Creator profile header with avatar initials
+ * - Creator profile header with polaroid avatar
  * - Real-time WebSocket connection for live tips
  * - Tip form with preset amounts
- * - Recent tips feed with animations
- * - Top supporters leaderboard with medals
+ * - Recent tips feed rendered as sticky notes
+ * - Top supporters leaderboard
  * - Notification system integration
- *
- * Data flow:
- *   1. Page loads → fetch creator profile + tips + leaderboard (parallel)
- *   2. WebSocket connects → subscribe to live tips
- *   3. User submits tip → POST /api/tips/send
- *   4. Success → refresh tips list + show success message
  */
 
 import {
@@ -161,8 +155,8 @@ export default function UserPublicPage() {
     return (
       <Container maxW="container.lg" py={20}>
         <VStack>
-          <Spinner size="lg" color="purple.400" />
-          <Text color="whiteAlpha.500" fontSize="sm">Loading creator page...</Text>
+          <Spinner size="lg" color="brand.ink" />
+          <Text color="brand.inkSoft" fontSize="sm">Loading creator page...</Text>
         </VStack>
       </Container>
     );
@@ -173,7 +167,7 @@ export default function UserPublicPage() {
     return (
       <Container maxW="container.md" py={20}>
         <MotionBox
-          className="glass-strong"
+          className="paper-card"
           p={8}
           textAlign="center"
           initial={{ opacity: 0, y: 20 }}
@@ -181,19 +175,19 @@ export default function UserPublicPage() {
         >
           <VStack gap={4}>
             <Text fontSize="4xl">🔍</Text>
-            <Heading size="lg" color="white" fontFamily="'Fredoka', sans-serif">
+            <Heading size="lg" color="brand.ink" fontFamily="heading">
               Creator Not Found
             </Heading>
-            <Text color="whiteAlpha.500" fontSize="sm">
+            <Text color="brand.inkSoft" fontSize="sm">
               No creator with username &quot;{username}&quot; exists yet.
             </Text>
             <Button
               variant="outline"
-              color="whiteAlpha.700"
-              borderColor="whiteAlpha.200"
-              _hover={{ bg: "whiteAlpha.100" }}
+              color="brand.ink"
+              borderColor="brand.inkSoft"
+              _hover={{ bg: "brand.paperDeep" }}
               onClick={() => router.push("/")}
-              borderRadius="xl"
+              borderRadius="md"
             >
               ← Back to Home
             </Button>
@@ -219,50 +213,64 @@ export default function UserPublicPage() {
         <Grid templateColumns={{ base: "1fr", lg: "1fr 380px" }} gap={8}>
           {/* ── Left Column: Profile + Tips Feed ── */}
           <GridItem>
-            <VStack gap={6} align="stretch">
+            <VStack gap={8} align="stretch">
               {/* Profile Header */}
               <MotionBox
-                className="glass-strong"
+                className="paper-card rotate-doodle-2"
                 p={{ base: 5, md: 8 }}
+                position="relative"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <HStack gap={5} flexWrap="wrap">
-                  {/* Avatar */}
+                <Box position="absolute" top="-3" left="33%" transform="rotate(var(--theme-rot-3))" w="5rem" className="washi bg-washi-yellow" />
+                
+                <HStack gap={5} flexWrap="wrap" alignItems="flex-start">
+                  {/* Polaroid Avatar Mock */}
                   <Box
-                    w={20}
-                    h={20}
-                    borderRadius="2xl"
-                    bg="linear-gradient(135deg, #7928CA, #FF0080)"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    fontSize="2xl"
-                    fontWeight="700"
-                    color="white"
-                    flexShrink={0}
+                    bg="white"
+                    p={2}
+                    pb={6}
+                    boxShadow="sm"
+                    transform="rotate(var(--theme-rot-3))"
+                    w="96px"
+                    border="1px solid #eaeaea"
                   >
-                    {displayName[0].toUpperCase()}
+                    <Box
+                      w="100%"
+                      aspectRatio="1"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="4xl"
+                      bgGradient="linear(to-br, orange.300, pink.300)"
+                      fontFamily="heading"
+                    >
+                      <span style={{ filter: "drop-shadow(1px 1px 0 rgba(0,0,0,0.2))" }}>
+                        {displayName[0].toUpperCase()}
+                      </span>
+                    </Box>
                   </Box>
 
-                  <Box flex={1}>
+                  <Box flex={1} pt={2}>
                     <HStack gap={2} mb={1} flexWrap="wrap">
                       <Heading
                         as="h1"
                         size="xl"
-                        color="white"
-                        fontFamily="'Fredoka', sans-serif"
+                        color="brand.ink"
+                        fontFamily="heading"
                       >
                         {displayName}
                       </Heading>
                       {creator.user.isPremium && (
                         <Badge
-                          bg="linear-gradient(135deg, #FFE600, #FF8C00)"
-                          color="black"
+                          bg="brand.markerYellow"
+                          color="brand.ink"
                           fontSize="xs"
-                          borderRadius="full"
+                          borderRadius="sm"
                           px={2}
+                          border="1px solid"
+                          borderColor="brand.ink"
                         >
                           ⭐ Premium
                         </Badge>
@@ -270,12 +278,12 @@ export default function UserPublicPage() {
                     </HStack>
 
                     {creator.user.bio && (
-                      <Text color="whiteAlpha.600" fontSize="sm" mb={2}>
+                      <Text color="brand.inkSoft" fontSize="md" mb={2} fontFamily="heading">
                         {creator.user.bio}
                       </Text>
                     )}
 
-                    <HStack gap={4} fontSize="sm" color="whiteAlpha.400">
+                    <HStack gap={4} fontSize="xs" color="brand.inkSoft" fontFamily="body">
                       <Text>{creator.stats.tipCount} tips</Text>
                       <Text>•</Text>
                       <Text>{Number(creator.stats.totalTipsReceived).toFixed(2)} SOL received</Text>
@@ -284,19 +292,20 @@ export default function UserPublicPage() {
                 </HStack>
 
                 {/* Actions Row */}
-                <HStack mt={4} gap={2}>
-                  <HStack fontSize="xs" color={isConnected ? "green.400" : "whiteAlpha.400"} gap={1}>
-                    <Box className={isConnected ? "pulse-dot" : undefined} w="6px" h="6px" borderRadius="full" bg={isConnected ? "green.400" : "whiteAlpha.300"} />
-                    <Text>{isConnected ? "Live" : "Connecting..."}</Text>
+                <HStack mt={6} gap={2} px={2}>
+                  <HStack fontSize="xs" color={isConnected ? "brand.markerGreen" : "brand.inkSoft"} gap={1}>
+                    <Box className={isConnected ? "pulse-dot" : undefined} w="8px" h="8px" borderRadius="full" bg={isConnected ? "brand.markerGreen" : "gray.300"} />
+                    <Text fontWeight="bold">{isConnected ? "Live" : "Connecting..."}</Text>
                   </HStack>
                   <Box flex={1} />
                   <Button
                     variant="ghost"
                     size="xs"
-                    color="whiteAlpha.500"
-                    _hover={{ color: "whiteAlpha.800", bg: "whiteAlpha.100" }}
+                    color="brand.inkSoft"
+                    _hover={{ color: "brand.ink", bg: "brand.paperDeep" }}
                     onClick={() => setIsSettingsOpen(true)}
-                    borderRadius="lg"
+                    borderRadius="md"
+                    fontFamily="body"
                   >
                     <FiBell size={14} />
                     <Text ml={1}>Notifications</Text>
@@ -310,49 +319,57 @@ export default function UserPublicPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Heading as="h3" size="sm" color="whiteAlpha.700" mb={4} fontFamily="'Fredoka', sans-serif">
-                  Recent Tips ({tips.length})
+                <Heading as="h3" size="md" color="brand.ink" mb={6} fontFamily="heading">
+                  <span className="marker-highlight">tip wall ({tips.length})</span>
                 </Heading>
                 {tips.length > 0 ? (
-                  <VStack gap={3} align="stretch">
-                    {tips.map((tip, i) => (
-                      <MotionBox
-                        key={tip.id}
-                        className="glass glass-hover"
-                        p={4}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: 0.03 * i }}
-                      >
-                        <HStack justifyContent="space-between" mb={1}>
-                          <Text fontWeight="600" color="whiteAlpha.800" fontSize="sm">
-                            {tip.donorName || "Anonymous"}
+                  <Grid templateColumns={{ base: "1fr", sm: "repeat(2, 1fr)" }} gap={4}>
+                    {tips.map((tip, i) => {
+                      const colorClass = i % 3 === 0 ? "pink" : i % 3 === 1 ? "cyan" : "";
+                      const rotation = i % 2 === 0 ? "rotate(1.5deg)" : "rotate(-1.5deg)";
+                      return (
+                        <MotionBox
+                          key={tip.id}
+                          className={`sticky-note ${colorClass}`}
+                          style={{ transform: rotation }}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3, delay: 0.05 * i }}
+                        >
+                          <Box position="absolute" top="-2" left="50%" transform="translateX(-50%)" w={3} h={3} bg="brand.markerRed" borderRadius="full" boxShadow="sm" border="1px solid var(--theme-card-border)" />
+                          <HStack justifyContent="space-between" mb={2}>
+                            <Text fontWeight="bold" color="brand.inkSoft" fontSize="xs" fontFamily="body">
+                              @{tip.donorName || "anonymous"}
+                            </Text>
+                            <Badge
+                              bg="transparent"
+                              color="brand.ink"
+                              border="1px solid"
+                              borderColor="brand.ink"
+                              borderRadius="full"
+                              px={2}
+                              fontSize="xs"
+                              fontFamily="body"
+                            >
+                              ◎ {Number(tip.amount).toFixed(2)}
+                            </Badge>
+                          </HStack>
+                          {tip.message && (
+                            <Text color="brand.ink" fontSize="lg" mb={2} fontFamily="heading" lineHeight="1.3">
+                              {tip.message}
+                            </Text>
+                          )}
+                          <Text fontSize="2xs" color="brand.inkSoft" fontFamily="body">
+                            {new Date(tip.createdAt).toLocaleDateString()}
                           </Text>
-                          <Badge
-                            bg="linear-gradient(135deg, #7928CA, #FF0080)"
-                            color="white"
-                            borderRadius="full"
-                            px={2}
-                            fontSize="xs"
-                          >
-                            ◎ {Number(tip.amount).toFixed(2)}
-                          </Badge>
-                        </HStack>
-                        {tip.message && (
-                          <Text color="whiteAlpha.500" fontSize="sm" mb={1}>
-                            &quot;{tip.message}&quot;
-                          </Text>
-                        )}
-                        <Text fontSize="xs" color="whiteAlpha.300">
-                          {new Date(tip.createdAt).toLocaleString()}
-                        </Text>
-                      </MotionBox>
-                    ))}
-                  </VStack>
+                        </MotionBox>
+                      );
+                    })}
+                  </Grid>
                 ) : (
-                  <Box className="glass" p={6} textAlign="center">
-                    <Text color="whiteAlpha.400" fontSize="sm">
-                      No tips yet. Be the first to support this creator! 🍃
+                  <Box className="border-sketch" p={8} textAlign="center" borderStyle="dashed">
+                    <Text color="brand.inkSoft" fontSize="md" fontFamily="heading">
+                      no notes here yet. be the first to stick one! 🍃
                     </Text>
                   </Box>
                 )}
@@ -362,33 +379,34 @@ export default function UserPublicPage() {
 
           {/* ── Right Column: Tip Form + Leaderboard ── */}
           <GridItem>
-            <VStack gap={6} align="stretch" position={{ lg: "sticky" }} top={{ lg: "100px" }}>
+            <VStack gap={8} align="stretch" position={{ lg: "sticky" }} top={{ lg: "40px" }}>
               {/* Tip Form Card */}
               <MotionBox
-                className="glass-strong"
+                className="paper-card"
                 p={{ base: 5, md: 6 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <Heading as="h2" size="sm" color="white" mb={4} fontFamily="'Fredoka', sans-serif">
-                  🍃 Send a Tip
+                <Heading as="h2" size="lg" color="brand.ink" mb={4} fontFamily="heading">
+                  send a tip
                 </Heading>
 
                 {/* Success Message */}
                 {successMessage && (
                   <Box
                     p={3}
-                    borderRadius="lg"
-                    bg="rgba(34, 197, 94, 0.1)"
-                    border="1px solid rgba(34, 197, 94, 0.2)"
+                    borderRadius="md"
+                    bg="brand.markerGreen"
+                    border="2px solid"
+                    borderColor="brand.ink"
                     display="flex"
                     alignItems="flex-start"
                     gap={2}
                     mb={4}
                   >
-                    <FiCheck style={{ marginTop: "2px", color: "#4ade80", flexShrink: 0 }} />
-                    <Text fontSize="sm" color="green.300">{successMessage}</Text>
+                    <FiCheck style={{ marginTop: "2px", color: "var(--theme-text)", flexShrink: 0 }} />
+                    <Text fontSize="sm" color="brand.ink" fontFamily="body" fontWeight="bold">{successMessage}</Text>
                   </Box>
                 )}
 
@@ -396,16 +414,17 @@ export default function UserPublicPage() {
                 {errorMessage && (
                   <Box
                     p={3}
-                    borderRadius="lg"
-                    bg="rgba(239, 68, 68, 0.1)"
-                    border="1px solid rgba(239, 68, 68, 0.2)"
+                    borderRadius="md"
+                    bg="brand.markerRed"
+                    border="2px solid"
+                    borderColor="brand.ink"
                     display="flex"
                     alignItems="flex-start"
                     gap={2}
                     mb={4}
                   >
-                    <FiAlertCircle style={{ marginTop: "2px", color: "#f87171", flexShrink: 0 }} />
-                    <Text fontSize="sm" color="red.300">{errorMessage}</Text>
+                    <FiAlertCircle style={{ marginTop: "2px", color: "var(--theme-bg)", flexShrink: 0 }} />
+                    <Text fontSize="sm" color="brand.paper" fontFamily="body" fontWeight="bold">{errorMessage}</Text>
                   </Box>
                 )}
 
@@ -418,14 +437,15 @@ export default function UserPublicPage() {
 
               {/* Leaderboard */}
               <MotionBox
-                className="glass"
+                className="border-sketch"
                 p={{ base: 5, md: 6 }}
+                bg="brand.paperDeep"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Heading as="h3" size="sm" color="whiteAlpha.700" mb={4} fontFamily="'Fredoka', sans-serif">
-                  🏆 Top Supporters
+                <Heading as="h3" size="md" color="brand.ink" mb={4} fontFamily="heading">
+                  🏆 top supporters
                 </Heading>
                 <DonorLeaderboard entries={leaderboard} />
               </MotionBox>

@@ -44,7 +44,7 @@ export const NotificationBanner: React.FC<NotificationRendererProps> = ({ tip, d
         style={{ animation: 'slideDown 0.4s ease-out' }}
       >
         <Box
-          bg="linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%)"
+          bg="linear-gradient(90deg, #9945FF 0%, #14F195 50%, #9945FF 100%)"
           padding={4}
           textAlign="center"
           boxShadow="0 8px 20px rgba(0,0,0,0.15)"

@@ -7,6 +7,7 @@ import { NotificationRendererProps } from './types';
 
 /**
  * NotificationSlideIn - Slides in from left with flourish
+ * Themed with Solana gradient accent and design token colors.
  */
 export const NotificationSlideIn: React.FC<NotificationRendererProps> = ({ tip, duration, onDismiss }) => {
   const [isVisible, setIsVisible] = React.useState(true);
@@ -44,28 +45,28 @@ export const NotificationSlideIn: React.FC<NotificationRendererProps> = ({ tip, 
         style={{ animation: 'slideInLeft 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)' }}
       >
         <Box
-          bg="white"
+          bg="var(--theme-card-bg)"
           borderRadius="xl"
-          boxShadow="0 20px 40px rgba(102, 126, 234, 0.4)"
+          boxShadow="0 20px 40px rgba(153, 69, 255, 0.25)"
           minW="320px"
           maxW="380px"
-          border="2px solid"
-          borderColor="purple.200"
+          border="1.5px solid var(--theme-card-border)"
+          overflow="hidden"
         >
           <VStack gap={0} align="stretch">
             {/* Header */}
             <Box
-              bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+              bg="linear-gradient(135deg, #9945FF 0%, #14F195 100%)"
               padding={4}
               borderTopRadius="lg"
               color="white"
             >
               <HStack justify="space-between" align="flex-start">
                 <VStack align="start" gap={1} flex={1}>
-                  <Text fontWeight="bold" fontSize="lg">
+                  <Text fontWeight="bold" fontSize="lg" fontFamily="var(--theme-font-heading)">
                     💰 New Tip!
                   </Text>
-                  <Text fontSize="2xl" fontWeight="bold">
+                  <Text fontSize="2xl" fontWeight="bold" fontFamily="var(--theme-font-heading)">
                     ◎ {tip.amount.toFixed(2)}
                   </Text>
                 </VStack>
@@ -92,10 +93,10 @@ export const NotificationSlideIn: React.FC<NotificationRendererProps> = ({ tip, 
                   />
                 )}
                 <VStack align="start" gap={0}>
-                  <Text fontWeight="bold" color="gray.800">
+                  <Text fontWeight="bold" color="brand.ink" fontFamily="var(--theme-font-heading)">
                     {tip.donorName}
                   </Text>
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color="brand.inkSoft" fontFamily="var(--theme-font-body)">
                     {new Date(tip.timestamp).toLocaleTimeString()}
                   </Text>
                 </VStack>
@@ -103,8 +104,8 @@ export const NotificationSlideIn: React.FC<NotificationRendererProps> = ({ tip, 
 
               {/* Message */}
               {tip.message && (
-                <Box width="100%" bg="gray.50" padding={3} borderRadius="md">
-                  <Text fontSize="sm" color="gray.700">
+                <Box width="100%" bg="brand.paperDeep" padding={3} borderRadius="md" border="1px solid var(--theme-card-border)">
+                  <Text fontSize="sm" color="brand.ink" fontFamily="var(--theme-font-body)">
                     {tip.message}
                   </Text>
                 </Box>
@@ -113,9 +114,11 @@ export const NotificationSlideIn: React.FC<NotificationRendererProps> = ({ tip, 
               {/* Action button */}
               <Button
                 width="100%"
-                bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                bg="linear-gradient(135deg, #9945FF 0%, #14F195 100%)"
                 color="white"
                 fontWeight="bold"
+                fontFamily="var(--theme-font-heading)"
+                _hover={{ opacity: 0.9 }}
                 onClick={() => {
                   setIsVisible(false);
                   setTimeout(onDismiss, 300);

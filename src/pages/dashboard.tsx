@@ -3,7 +3,7 @@
  *
  * Shows:
  * 1. Creator profile summary with share link
- * 2. Platform stats in glassmorphism cards
+ * 2. Platform stats in sketchy cards
  * 3. Quick actions (open public page, edit profile)
  *
  * Falls back to registration prompt if no creator data found.
@@ -80,58 +80,52 @@ export default function DashboardPage() {
       <Head>
         <title>Dashboard — PuffTip</title>
       </Head>
-      <Container maxW="container.lg" py={{ base: 8, md: 16 }}>
+      <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={8} align="stretch">
           
           {/* ── Unregistered Banner ── */}
           {!creator && !loading && (
             <MotionBox
-              className="glass-strong"
+              className="glass-card"
               p={6}
-              bg="rgba(121, 40, 202, 0.15)"
-              borderColor="rgba(121, 40, 202, 0.3)"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <HStack justifyContent="space-between" flexWrap="wrap" gap={4}>
                 <Box>
-                  <Heading size="sm" color="white" fontFamily="'Fredoka', sans-serif">
+                  <Heading size="md" color="brand.ink" fontFamily="heading">
                     Viewing in Demo Mode 👀
                   </Heading>
-                  <Text color="whiteAlpha.700" fontSize="sm" mt={1}>
+                  <Text color="brand.inkSoft" fontSize="sm" mt={1} fontFamily="body">
                     Register your wallet to claim your custom tip page and track your personal earnings.
                   </Text>
                 </Box>
-                <Button
-                  size="sm"
-                  bg="linear-gradient(135deg, #7928CA 0%, #FF0080 100%)"
-                  color="white"
-                  _hover={{ opacity: 0.9 }}
-                  borderRadius="lg"
-                  onClick={() => router.push("/register")}
-                >
-                  Register Now
-                </Button>
+                <button className="premium-btn primary" style={{ fontSize: "14px", padding: "8px 20px" }} onClick={() => router.push("/register")}>
+                  Register Now →
+                </button>
               </HStack>
             </MotionBox>
           )}
+          
           {/* ── Profile Header ── */}
           <MotionBox
-            className="glass-strong"
+            className="glass-card"
             p={{ base: 5, md: 8 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            position="relative"
           >
-            <HStack justifyContent="space-between" flexWrap="wrap" gap={4}>
+            <Box position="absolute" top="-10px" left="20px" transform="rotate(calc(var(--theme-rot-3) * 1.5))" w="4rem" className="washi bg-washi-pink" />
+            <HStack justifyContent="space-between" flexWrap="wrap" gap={4} mt={2}>
               <Box>
-                <Text fontSize="xs" color="whiteAlpha.400" mb={1} textTransform="uppercase" letterSpacing="wider">
+                <Text fontSize="xs" color="brand.solana" mb={1} textTransform="uppercase" letterSpacing="wider" fontWeight="700" fontFamily="body">
                   Creator Dashboard
                 </Text>
-                <Heading size="xl" color="white" fontFamily="'Fredoka', sans-serif">
+                <Heading size="2xl" color="brand.ink" fontFamily="heading">
                   {creator?.displayName || "Your Dashboard"}
                 </Heading>
-                <Text color="whiteAlpha.500" mt={1} fontSize="sm">
+                <Text color="brand.inkSoft" mt={1} fontSize="sm">
                   {creator?.bio || "Manage your PuffTip profile and track activity."}
                 </Text>
               </Box>
@@ -141,14 +135,18 @@ export default function DashboardPage() {
                 w={16}
                 h={16}
                 borderRadius="full"
-                bg="linear-gradient(135deg, #7928CA, #FF0080)"
+                bg="brand.markerRed"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                fontSize="xl"
+                fontSize="2xl"
                 fontWeight="700"
-                color="white"
+                fontFamily="heading"
+                color="brand.paper"
                 flexShrink={0}
+                border="2px solid"
+                borderColor="brand.ink"
+                transform="rotate(calc(var(--theme-rot-2) * 2.5))"
               >
                 {(creator?.displayName || creator?.username || "?")[0].toUpperCase()}
               </Box>
@@ -157,13 +155,14 @@ export default function DashboardPage() {
 
           {/* ── Share Link ── */}
           <MotionBox
-            className="glass"
+            className="glass-card"
             p={4}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
+            bg="brand.paperDeep"
           >
-            <Text fontSize="xs" color="whiteAlpha.400" mb={2} fontWeight="600">
+            <Text fontSize="sm" color="brand.ink" mb={2} fontWeight="600" fontFamily="body">
               YOUR TIP PAGE
             </Text>
             <HStack gap={2}>
@@ -173,27 +172,32 @@ export default function DashboardPage() {
                 size="sm"
                 flex={1}
                 fontSize="sm"
-                color="whiteAlpha.700"
+                color="brand.inkSoft"
+                bg="brand.paper"
+                borderColor="brand.ink"
               />
               <Button
                 size="sm"
-                variant="outline"
-                borderColor="whiteAlpha.200"
-                color="whiteAlpha.700"
-                _hover={{ bg: "whiteAlpha.100" }}
+                bg="brand.paper"
+                border="2px solid"
+                borderColor="brand.ink"
+                color="brand.ink"
+                _hover={{ bg: "brand.paperDeep" }}
                 onClick={handleCopy}
-                borderRadius="lg"
+                borderRadius="md"
                 minW="80px"
               >
                 {copied ? <><FiCheck size={14} /> Copied</> : <><FiCopy size={14} /> Copy</>}
               </Button>
               <Button
                 size="sm"
-                bg="linear-gradient(135deg, #7928CA, #FF0080)"
-                color="white"
-                _hover={{ opacity: 0.9 }}
+                bg="brand.markerYellow"
+                border="2px solid"
+                borderColor="brand.ink"
+                color="brand.ink"
+                _hover={{ transform: "rotate(var(--theme-rot-1))" }}
                 onClick={() => router.push(`/u/${creator?.username || "demo"}`)}
-                borderRadius="lg"
+                borderRadius="md"
               >
                 <FiExternalLink size={14} />
               </Button>
@@ -203,21 +207,26 @@ export default function DashboardPage() {
           {/* ── Quick Actions ── */}
           <HStack gap={3} flexWrap="wrap">
             <Button
-              bg="linear-gradient(135deg, #7928CA 0%, #FF0080 100%)"
-              color="white"
-              _hover={{ opacity: 0.9, transform: "translateY(-1px)" }}
-              transition="all 0.3s"
-              borderRadius="xl"
+              bg="brand.ink"
+              color="brand.paper"
+              className="shadow-sticker"
+              _hover={{ transform: "rotate(-2deg) translateY(-1px)", opacity: 0.9 }}
+              transition="all 0.2s"
+              borderRadius="md"
+              fontFamily="heading"
+              fontSize="lg"
               onClick={() => router.push(`/u/${creator?.username || "demo"}`)}
             >
               Open Public Page
             </Button>
             <Button
-              variant="outline"
-              color="whiteAlpha.700"
-              borderColor="whiteAlpha.200"
-              _hover={{ bg: "whiteAlpha.100" }}
-              borderRadius="xl"
+              bg="transparent"
+              color="brand.inkSoft"
+              border="2px solid"
+              borderColor="brand.inkSoft"
+              _hover={{ bg: "brand.paperDeep", color: "brand.ink", borderColor: "brand.ink" }}
+              borderRadius="md"
+              fontFamily="body"
               onClick={() => router.push("/")}
             >
               Back to Home
@@ -226,12 +235,12 @@ export default function DashboardPage() {
 
           {/* ── Stats Grid ── */}
           <Box>
-            <Heading size="md" color="white" mb={4} fontFamily="'Fredoka', sans-serif">
-              Platform Overview
+            <Heading size="lg" color="brand.ink" mb={4} fontFamily="heading">
+              <span className="marker-highlight">Platform Overview</span>
             </Heading>
             {loading ? (
               <VStack py={8}>
-                <Spinner color="purple.400" />
+                <Spinner color="brand.ink" />
               </VStack>
             ) : (
               <Grid
@@ -248,7 +257,7 @@ export default function DashboardPage() {
                 ].map((stat, i) => (
                   <GridItem key={stat.label}>
                     <MotionBox
-                      className="glass glass-hover"
+                      className="paper-card"
                       p={5}
                       textAlign="center"
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -256,10 +265,10 @@ export default function DashboardPage() {
                       transition={{ duration: 0.4, delay: 0.05 * i }}
                     >
                       <Text fontSize="2xl" mb={1}>{stat.icon}</Text>
-                      <Text fontSize="xs" color="whiteAlpha.500" mb={1} textTransform="uppercase" letterSpacing="wider">
+                      <Text fontSize="xs" color="brand.inkSoft" mb={1} textTransform="uppercase" letterSpacing="wider">
                         {stat.label}
                       </Text>
-                      <Heading size="md" color="white" fontFamily="'Fredoka', sans-serif">
+                      <Heading size="lg" color="brand.ink" fontFamily="heading">
                         {stat.value}
                       </Heading>
                     </MotionBox>
@@ -270,9 +279,9 @@ export default function DashboardPage() {
           </Box>
 
           {/* ── Wallet Info ── */}
-          <Box className="glass" p={4}>
-            <Text fontSize="xs" color="whiteAlpha.400" mb={1}>Connected Wallet</Text>
-            <Text fontSize="sm" color="whiteAlpha.600" fontFamily="monospace">
+          <Box className="border-sketch" p={4} borderStyle="dashed">
+            <Text fontSize="xs" color="brand.inkSoft" mb={1} fontFamily="body">Connected Wallet</Text>
+            <Text fontSize="sm" color="brand.ink" fontFamily="monospace">
               {creator?.walletAddress || "Not connected"}
             </Text>
           </Box>

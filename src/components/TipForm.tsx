@@ -19,7 +19,7 @@
  */
 
 import { Box, Button, Input, Textarea, VStack, Text, HStack } from "@chakra-ui/react";
-import { FiAlertCircle, FiSend } from "react-icons/fi";
+import { FiAlertCircle } from "react-icons/fi";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -149,21 +149,22 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
         {error && (
           <Box
             p={3}
-            borderRadius="lg"
-            bg="rgba(239, 68, 68, 0.1)"
-            border="1px solid rgba(239, 68, 68, 0.2)"
+            borderRadius="md"
+            bg="brand.markerRed"
+            border="2px solid"
+            borderColor="brand.ink"
             display="flex"
             alignItems="flex-start"
             gap={2}
           >
-            <FiAlertCircle style={{ marginTop: "2px", color: "#f87171", flexShrink: 0 }} />
-            <Text fontSize="sm" color="red.300">{error}</Text>
+            <FiAlertCircle style={{ marginTop: "2px", color: "var(--theme-bg)", flexShrink: 0 }} />
+            <Text fontSize="sm" color="brand.paper" fontFamily="body" fontWeight="bold">{error}</Text>
           </Box>
         )}
 
         {/* Donor Name */}
         <Box>
-          <Text fontWeight="600" mb={2} fontSize="sm" color="whiteAlpha.800">
+          <Text fontWeight="bold" mb={2} fontSize="sm" color="brand.ink" fontFamily="body">
             Your Name
           </Text>
           <Input
@@ -178,8 +179,8 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
 
         {/* Tip Amount with Presets */}
         <Box>
-          <Text fontWeight="600" mb={2} fontSize="sm" color="whiteAlpha.800">
-            Tip Amount (SOL) <span style={{ color: "#FF0080" }}>*</span>
+          <Text fontWeight="bold" mb={2} fontSize="sm" color="brand.ink" fontFamily="body">
+            Tip Amount (SOL) <span style={{ color: "var(--theme-marker-red)" }}>*</span>
           </Text>
 
           {/* Preset Buttons */}
@@ -190,19 +191,20 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
                 size="sm"
                 flex={1}
                 variant={formData.amount === preset.value ? "solid" : "outline"}
-                bg={formData.amount === preset.value ? "linear-gradient(135deg, #7928CA, #FF0080)" : "transparent"}
-                color={formData.amount === preset.value ? "white" : "whiteAlpha.600"}
-                borderColor="whiteAlpha.200"
+                bg={formData.amount === preset.value ? "brand.markerYellow" : "transparent"}
+                color="brand.ink"
+                border="2px solid"
+                borderColor={formData.amount === preset.value ? "brand.ink" : "brand.inkSoft"}
                 _hover={{
-                  bg: formData.amount === preset.value
-                    ? "linear-gradient(135deg, #7928CA, #FF0080)"
-                    : "whiteAlpha.100",
-                  borderColor: "whiteAlpha.300",
+                  bg: "brand.markerYellow",
+                  borderColor: "brand.ink",
+                  transform: "rotate(var(--theme-rot-1))"
                 }}
-                borderRadius="lg"
+                borderRadius="md"
                 onClick={() => setFormData({ ...formData, amount: preset.value })}
                 disabled={loading}
-                fontWeight="600"
+                fontWeight="bold"
+                fontFamily="body"
               >
                 ◎ {preset.label}
               </Button>
@@ -221,11 +223,11 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
             disabled={loading}
             size="lg"
           />
-          <Text fontSize="xs" color="whiteAlpha.400" mt={1}>
+          <Text fontSize="xs" color="brand.inkSoft" mt={1} fontFamily="body">
             Between 0.01 and 1000 SOL • 95% goes to creator
           </Text>
           {getFieldError("amount") && (
-            <Text color="red.300" fontSize="xs" mt={1}>
+            <Text color="brand.markerRed" fontSize="xs" mt={1} fontWeight="bold">
               {getFieldError("amount")}
             </Text>
           )}
@@ -233,7 +235,7 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
 
         {/* Message */}
         <Box>
-          <Text fontWeight="600" mb={2} fontSize="sm" color="whiteAlpha.800">
+          <Text fontWeight="bold" mb={2} fontSize="sm" color="brand.ink" fontFamily="body">
             Message
           </Text>
           <Textarea
@@ -244,11 +246,11 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
             maxLength={500}
             rows={3}
           />
-          <Text fontSize="xs" color="whiteAlpha.400" mt={1}>
+          <Text fontSize="xs" color="brand.inkSoft" mt={1} fontFamily="body">
             {formData.message.length}/500
           </Text>
           {getFieldError("message") && (
-            <Text color="red.300" fontSize="xs" mt={1}>
+            <Text color="brand.markerRed" fontSize="xs" mt={1} fontWeight="bold">
               {getFieldError("message")}
             </Text>
           )}
@@ -258,18 +260,19 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
         <Button
           type="submit"
           size="lg"
-          bg="linear-gradient(135deg, #7928CA 0%, #FF0080 100%)"
-          color="white"
-          _hover={{ opacity: 0.9, transform: "translateY(-1px)" }}
-          transition="all 0.3s"
-          borderRadius="xl"
+          bg="brand.ink"
+          color="brand.paper"
+          _hover={{ transform: "rotate(var(--theme-rot-1))" }}
+          transition="all 0.2s"
+          borderRadius="md"
           loading={loading}
           w="full"
-          boxShadow="0 4px 20px rgba(121, 40, 202, 0.3)"
+          className="shadow-sticker"
+          fontFamily="heading"
+          fontSize="2xl"
         >
           <HStack gap={2}>
-            <FiSend size={16} />
-            <Text>{loading ? "Sending..." : "Send Tip"}</Text>
+            <Text>{loading ? "sending..." : "send a puff →"}</Text>
           </HStack>
         </Button>
       </VStack>

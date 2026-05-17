@@ -31,13 +31,16 @@ function RankBadge({ rank }: { rank: number }) {
       w={6}
       h={6}
       borderRadius="full"
-      bg="whiteAlpha.100"
+      bg="brand.markerYellow"
       display="flex"
       alignItems="center"
       justifyContent="center"
       fontSize="xs"
-      color="whiteAlpha.500"
-      fontWeight="600"
+      color="brand.ink"
+      fontWeight="bold"
+      border="1px solid"
+      borderColor="brand.ink"
+      fontFamily="heading"
     >
       {rank}
     </Box>
@@ -51,22 +54,22 @@ export function DonorLeaderboard({ entries }: DonorLeaderboardProps) {
         entries.map((entry, index) => (
           <Box
             key={entry.donorKey}
-            className="glass-hover"
+            className="paper-card"
             p={3}
-            borderRadius="lg"
-            bg={index === 0 ? "rgba(121, 40, 202, 0.08)" : "transparent"}
+            borderRadius="md"
+            bg={index === 0 ? "brand.markerYellow" : "brand.paper"}
             border="1px solid"
-            borderColor={index === 0 ? "rgba(121, 40, 202, 0.15)" : "rgba(255,255,255,0.05)"}
+            borderColor="brand.ink"
             transition="all 0.2s"
           >
             <HStack justifyContent="space-between" alignItems="center">
               <HStack gap={3} alignItems="center">
                 <RankBadge rank={index + 1} />
                 <Box>
-                  <Text fontWeight="600" fontSize="sm" color="whiteAlpha.800">
+                  <Text fontWeight="bold" fontSize="sm" color="brand.ink" fontFamily="body">
                     {entry.donorName}
                   </Text>
-                  <Text fontSize="xs" color="whiteAlpha.400">
+                  <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">
                     {entry.tipCount} tip{entry.tipCount === 1 ? "" : "s"} •{" "}
                     {entry.donorWalletAddress.slice(0, 4)}...
                     {entry.donorWalletAddress.slice(-4)}
@@ -74,7 +77,7 @@ export function DonorLeaderboard({ entries }: DonorLeaderboardProps) {
                 </Box>
               </HStack>
               <Box textAlign="right">
-                <Text fontWeight="700" color="whiteAlpha.800" fontSize="sm">
+                <Text fontWeight="bold" color="brand.ink" fontSize="md" fontFamily="heading">
                   ◎ {entry.totalAmountSol.toFixed(2)}
                 </Text>
               </Box>
@@ -82,7 +85,7 @@ export function DonorLeaderboard({ entries }: DonorLeaderboardProps) {
           </Box>
         ))
       ) : (
-        <Text color="whiteAlpha.400" fontSize="sm" textAlign="center" py={4}>
+        <Text color="brand.inkSoft" fontSize="sm" textAlign="center" py={4} fontFamily="body">
           No supporters yet. Be the first! 🍃
         </Text>
       )}

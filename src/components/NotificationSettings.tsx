@@ -76,23 +76,26 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
       onClick={onClose}
     >
       <Box
-        className="glass-strong"
+        className="paper-card"
         maxW="500px"
         maxH="85vh"
         overflow="auto"
         padding={6}
         onClick={(e) => e.stopPropagation()}
         mx={4}
+        bg="brand.paper"
       >
         <HStack justify="space-between" marginBottom={4}>
-          <Heading size="md" color="white" fontFamily="'Fredoka', sans-serif">
+          <Heading size="md" color="brand.ink" fontFamily="heading">
             🎵 Notifications
           </Heading>
           <Button
             variant="ghost"
-            color="whiteAlpha.500"
-            _hover={{ color: "white", bg: "whiteAlpha.100" }}
+            color="brand.inkSoft"
+            _hover={{ color: "brand.ink", bg: "brand.markerYellow" }}
             onClick={onClose}
+            fontFamily="heading"
+            fontSize="xl"
           >
             ✕
           </Button>
@@ -101,18 +104,19 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         <VStack align="start" gap={5}>
           {/* Enable/Disable */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Master Control
             </Text>
             <Button
               width="100%"
-              bg={preferences.enabled ? 'rgba(34, 197, 94, 0.15)' : 'whiteAlpha.50'}
-              color={preferences.enabled ? 'green.300' : 'whiteAlpha.500'}
-              border="1px solid"
-              borderColor={preferences.enabled ? 'rgba(34, 197, 94, 0.2)' : 'whiteAlpha.100'}
-              _hover={{ bg: preferences.enabled ? 'rgba(34, 197, 94, 0.2)' : 'whiteAlpha.100' }}
+              bg={preferences.enabled ? 'brand.markerGreen' : 'transparent'}
+              color="brand.ink"
+              border={preferences.enabled ? '2px solid #1B1B1B' : '2px dashed #1B1B1B'}
+              _hover={{ bg: preferences.enabled ? 'brand.markerGreen' : 'brand.paperDeep' }}
               onClick={() => updatePreferences({ enabled: !preferences.enabled })}
-              borderRadius="xl"
+              borderRadius="md"
+              fontFamily="heading"
+              fontSize="lg"
             >
               {preferences.enabled ? '✓ Enabled' : '✗ Disabled'}
             </Button>
@@ -120,7 +124,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Notification Types */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Notification Types
             </Text>
             <VStack gap={1} align="stretch">
@@ -130,17 +134,18 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                   <Button
                     key={type}
                     width="100%"
-                    bg={isActive ? 'rgba(121, 40, 202, 0.15)' : 'transparent'}
-                    color={isActive ? 'purple.300' : 'whiteAlpha.500'}
-                    border="1px solid"
-                    borderColor={isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100'}
-                    _hover={{ bg: isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100' }}
+                    bg={isActive ? 'brand.markerYellow' : 'transparent'}
+                    color="brand.ink"
+                    border={isActive ? '2px solid #1B1B1B' : '2px dashed #4A4A4A'}
+                    _hover={{ bg: isActive ? 'brand.markerYellow' : 'brand.paperDeep', transform: "rotate(calc(var(--theme-rot-1) / 4))" }}
                     onClick={() => handleTypeToggle(type)}
-                    borderRadius="lg"
+                    borderRadius="md"
                     justifyContent="space-between"
+                    fontFamily="body"
+                    fontWeight="bold"
                   >
                     <Text>{type.charAt(0).toUpperCase() + type.slice(1)}</Text>
-                    <Text>{isActive ? '✓' : '○'}</Text>
+                    <Text fontFamily="heading" fontSize="xl">{isActive ? '✓' : '○'}</Text>
                   </Button>
                 );
               })}
@@ -149,7 +154,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Content Style */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Content Style
             </Text>
             <VStack gap={1} align="stretch">
@@ -159,17 +164,18 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                   <Button
                     key={style}
                     width="100%"
-                    bg={isActive ? 'rgba(121, 40, 202, 0.15)' : 'transparent'}
-                    color={isActive ? 'purple.300' : 'whiteAlpha.500'}
-                    border="1px solid"
-                    borderColor={isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100'}
-                    _hover={{ bg: isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100' }}
+                    bg={isActive ? 'brand.markerPink' : 'transparent'}
+                    color="brand.ink"
+                    border={isActive ? '2px solid #1B1B1B' : '2px dashed #4A4A4A'}
+                    _hover={{ bg: isActive ? 'brand.markerPink' : 'brand.paperDeep', transform: "rotate(calc(var(--theme-rot-2) / 3))" }}
                     onClick={() => updatePreferences({ contentStyle: style })}
-                    borderRadius="lg"
+                    borderRadius="md"
                     justifyContent="space-between"
+                    fontFamily="body"
+                    fontWeight="bold"
                   >
                     <Text>{style.charAt(0).toUpperCase() + style.slice(1)}</Text>
-                    <Text>{isActive ? '✓' : '○'}</Text>
+                    <Text fontFamily="heading" fontSize="xl">{isActive ? '✓' : '○'}</Text>
                   </Button>
                 );
               })}
@@ -178,7 +184,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Audio */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Audio Volume: {volume}%
             </Text>
             <input
@@ -187,17 +193,19 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
               max="100"
               value={volume}
               onChange={(e) => changeVolume(parseInt(e.target.value))}
-              style={{ width: '100%' }}
+              style={{ width: '100%', accentColor: '#FF0105' }}
             />
             <Button
               marginTop={2}
               width="100%"
               variant="outline"
-              borderColor="whiteAlpha.200"
-              color="whiteAlpha.600"
-              _hover={{ bg: 'whiteAlpha.100' }}
+              borderColor="brand.ink"
+              color="brand.ink"
+              _hover={{ bg: 'brand.paperDeep', transform: "rotate(var(--theme-rot-1))" }}
               onClick={() => play()}
-              borderRadius="lg"
+              borderRadius="md"
+              fontFamily="heading"
+              fontSize="lg"
             >
               🔊 Test Sound
             </Button>
@@ -205,7 +213,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Sound Selection */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Sound: {getCurrentSoundName()}
             </Text>
             <VStack align="stretch" gap={1}>
@@ -214,26 +222,28 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                 return (
                   <Button
                     key={type}
-                    bg={isActive ? 'rgba(121, 40, 202, 0.15)' : 'transparent'}
-                    color={isActive ? 'purple.300' : 'whiteAlpha.500'}
-                    border="1px solid"
-                    borderColor={isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100'}
-                    _hover={{ bg: isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100' }}
+                    bg={isActive ? 'brand.cyan' : 'transparent'}
+                    color="brand.ink"
+                    border={isActive ? '2px solid #1B1B1B' : '2px dashed #4A4A4A'}
+                    _hover={{ bg: isActive ? 'brand.cyan' : 'brand.paperDeep' }}
                     onClick={() => changeSoundType(type)}
-                    borderRadius="lg"
+                    borderRadius="md"
+                    fontFamily="body"
+                    fontWeight="bold"
                   >
                     {sound.name}
                   </Button>
                 );
               })}
               <Button
-                bg={isMuted ? 'rgba(239, 68, 68, 0.15)' : 'transparent'}
-                color={isMuted ? 'red.300' : 'whiteAlpha.500'}
-                border="1px solid"
-                borderColor={isMuted ? 'rgba(239, 68, 68, 0.2)' : 'whiteAlpha.100'}
-                _hover={{ bg: isMuted ? 'rgba(239, 68, 68, 0.2)' : 'whiteAlpha.100' }}
+                bg={isMuted ? 'brand.markerRed' : 'transparent'}
+                color={isMuted ? 'brand.paper' : 'brand.ink'}
+                border={isMuted ? '2px solid #1B1B1B' : '2px dashed #1B1B1B'}
+                _hover={{ bg: isMuted ? 'brand.markerRed' : 'brand.paperDeep' }}
                 onClick={toggleMute}
-                borderRadius="lg"
+                borderRadius="md"
+                fontFamily="heading"
+                fontSize="lg"
               >
                 {isMuted ? '🔇 Unmute' : '🔊 Mute'}
               </Button>
@@ -242,7 +252,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Stacking Mode */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Multiple Tips
             </Text>
             <VStack gap={1} align="stretch">
@@ -252,17 +262,18 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                   <Button
                     key={mode}
                     width="100%"
-                    bg={isActive ? 'rgba(121, 40, 202, 0.15)' : 'transparent'}
-                    color={isActive ? 'purple.300' : 'whiteAlpha.500'}
-                    border="1px solid"
-                    borderColor={isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100'}
-                    _hover={{ bg: isActive ? 'rgba(121, 40, 202, 0.2)' : 'whiteAlpha.100' }}
+                    bg={isActive ? 'brand.markerYellow' : 'transparent'}
+                    color="brand.ink"
+                    border={isActive ? '2px solid #1B1B1B' : '2px dashed #4A4A4A'}
+                    _hover={{ bg: isActive ? 'brand.markerYellow' : 'brand.paperDeep', transform: "rotate(var(--theme-rot-2))" }}
                     onClick={() => updatePreferences({ stackingMode: mode })}
-                    borderRadius="lg"
+                    borderRadius="md"
                     justifyContent="space-between"
+                    fontFamily="body"
+                    fontWeight="bold"
                   >
                     <Text>{mode.charAt(0).toUpperCase() + mode.slice(1)}</Text>
-                    <Text>{isActive ? '✓' : '○'}</Text>
+                    <Text fontFamily="heading" fontSize="xl">{isActive ? '✓' : '○'}</Text>
                   </Button>
                 );
               })}
@@ -271,21 +282,21 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Duration Tiers */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Duration Tiers
             </Text>
             {preferences.autoDismissTiers
               .sort((a, b) => b.minAmount - a.minAmount)
               .map((tier) => (
                 <HStack key={tier.minAmount} gap={2} marginBottom={1}>
-                  <Text flex={1} fontSize="sm" color="whiteAlpha.500">
+                  <Text flex={1} fontSize="sm" color="brand.inkSoft" fontFamily="body">
                     ≥ ◎{tier.minAmount}: {(tier.durationMs / 1000).toFixed(1)}s
                   </Text>
                   <Button
                     size="sm"
                     variant="ghost"
-                    color="whiteAlpha.400"
-                    _hover={{ color: "red.300", bg: "whiteAlpha.100" }}
+                    color="brand.inkSoft"
+                    _hover={{ color: "brand.markerRed", bg: "brand.paperDeep" }}
                     onClick={() =>
                       updatePreferences({
                         autoDismissTiers: preferences.autoDismissTiers.filter(
@@ -293,6 +304,8 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                         ),
                       })
                     }
+                    fontFamily="heading"
+                    fontSize="xl"
                   >
                     −
                   </Button>
@@ -308,6 +321,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                 }
                 width="80px"
                 size="sm"
+                borderColor="brand.ink"
               />
               <Input
                 type="number"
@@ -318,15 +332,18 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                 }
                 width="100px"
                 size="sm"
+                borderColor="brand.ink"
               />
               <Button
                 size="sm"
                 variant="outline"
-                borderColor="whiteAlpha.200"
-                color="whiteAlpha.600"
-                _hover={{ bg: "whiteAlpha.100" }}
+                borderColor="brand.ink"
+                color="brand.ink"
+                _hover={{ bg: "brand.markerYellow" }}
                 onClick={handleAddTier}
-                borderRadius="lg"
+                borderRadius="md"
+                fontFamily="heading"
+                fontSize="xl"
               >
                 +
               </Button>
@@ -335,7 +352,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
           {/* Max on Screen */}
           <Box width="100%">
-            <Text fontWeight="600" marginBottom={2} fontSize="sm" color="whiteAlpha.700">
+            <Text fontWeight="bold" marginBottom={2} fontSize="sm" color="brand.ink" fontFamily="body">
               Max Notifications: {preferences.maxOnScreen}
             </Text>
             <input
@@ -346,7 +363,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
               onChange={(e) =>
                 updatePreferences({ maxOnScreen: parseInt(e.target.value) })
               }
-              style={{ width: '100%' }}
+              style={{ width: '100%', accentColor: '#FF0105' }}
             />
           </Box>
         </VStack>
@@ -354,19 +371,23 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         <HStack gap={3} marginTop={6} justify="flex-end">
           <Button
             variant="ghost"
-            color="whiteAlpha.500"
-            _hover={{ color: "white", bg: "whiteAlpha.100" }}
+            color="brand.inkSoft"
+            _hover={{ color: "brand.ink", bg: "brand.paperDeep" }}
             onClick={onClose}
-            borderRadius="xl"
+            borderRadius="md"
+            fontFamily="body"
           >
-            Close
+            Cancel
           </Button>
           <Button
-            bg="linear-gradient(135deg, #7928CA, #FF0080)"
-            color="white"
-            _hover={{ opacity: 0.9 }}
+            bg="brand.ink"
+            color="brand.paper"
+            _hover={{ transform: "rotate(var(--theme-rot-1))" }}
             onClick={onClose}
-            borderRadius="xl"
+            borderRadius="md"
+            className="shadow-sticker"
+            fontFamily="heading"
+            fontSize="xl"
           >
             Done
           </Button>

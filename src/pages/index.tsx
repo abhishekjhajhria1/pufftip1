@@ -1,33 +1,25 @@
 /**
- * Home Page — PuffTip Landing
+ * Home Page — Premium Marketing Landing
  *
- * The first thing users see. Designed to:
- * 1. Wow with animated hero + gradient text
- * 2. Explain the product in 3 simple steps
- * 3. Show platform stats with glassmorphism cards
- * 4. Clear CTAs for creators and supporters
- *
- * No wallet required to view — connects when user clicks CTA.
+ * Conversion-focused layout:
+ * 1. Hero — gradient headline, Solana badge, social proof, ambient glows
+ * 2. Features — 8 built features in gradient-border cards
+ * 3. How It Works — 3-step timeline
+ * 4. Streamers — featured creator grid
+ * 5. Why Solana — blockchain advantage section
+ * 6. CTA — conversion section with gradient bg
+ * 7. Stats — live platform numbers
  */
 
 import {
-  Box,
-  VStack,
-  Heading,
-  Text,
-  Button,
-  Container,
-  Grid,
-  GridItem,
-  HStack,
-  Spinner,
+  Box, VStack, Heading, Text, Button, Container,
+  Grid, GridItem, HStack, Spinner,
 } from "@chakra-ui/react";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { FiZap, FiUsers, FiShield } from "react-icons/fi";
+import Link from "next/link";
 
 interface Stats {
   totalTipsCount: number;
@@ -38,266 +30,271 @@ interface Stats {
   premiumUsersCount: number;
 }
 
-const MotionBox = motion(Box);
-const MotionHeading = motion(Heading);
-const MotionText = motion(Text);
+const M = motion(Box);
+
+const FEATURES = [
+  { icon: "🖥️", title: "OBS Overlay", desc: "One browser source URL. Tips appear on stream as animated notifications in real-time." },
+  { icon: "⚡", title: "Instant SOL", desc: "Tips hit your wallet in under a second. No holding periods, no minimum payout, no middlemen." },
+  { icon: "🌐", title: "WebSocket Live", desc: "Tips are pushed instantly via WebSocket. Your overlay stays perfectly in sync." },
+  { icon: "🔔", title: "Notification System", desc: "Toast, modal, slide-in, or banner. Sound alerts, display modes — you pick what fits your stream." },
+  { icon: "📓", title: "Tip Wall", desc: "Every tip shows as a sticky note on your page. Viewers see the conversation happening live." },
+  { icon: "🏆", title: "Donor Leaderboard", desc: "Top supporters ranked by total tips. Give your biggest fans the recognition they deserve." },
+  { icon: "📊", title: "Creator Dashboard", desc: "Track tips, earnings, supporter count. Share your link, manage everything from one place." },
+  { icon: "🎨", title: "Dual Themes", desc: "Notebook for the hand-drawn vibe, Studio for the sleek dark mode. Your page, your aesthetic." },
+];
+
+const STREAMERS = [
+  { emoji: "🎸", name: "Smokey Jazz", handle: "smokeyjazz", bio: "late-night chill streams + lo-fi sets", fans: "12.4k", sol: "413", isLive: true },
+  { emoji: "👻", name: "Ghost Roast", handle: "ghostroast", bio: "horror speedruns w/ commentary", fans: "48.1k", sol: "1820", isLive: true },
+  { emoji: "💻", name: "Late Shift", handle: "lateshift", bio: "we code at 3am", fans: "6.2k", sol: "88", isLive: false },
+  { emoji: "🍜", name: "Miso Kitchen", handle: "misokitchen", bio: "ramen, knives, chaos", fans: "21.7k", sol: "522", isLive: false },
+  { emoji: "🚀", name: "Zero-G Pete", handle: "zerogpete", bio: "factorio rocket builds", fans: "33.9k", sol: "778", isLive: true },
+  { emoji: "📷", name: "Polaroid Kid", handle: "polaroid_kid", bio: "indie photo walks + chats", fans: "4.1k", sol: "42", isLive: false },
+];
 
 export default function Home() {
-  const { connected } = useWallet();
   const router = useRouter();
-
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch("/api/stats");
-        if (res.ok) {
-          const data = await res.json();
-          setStats(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
+    fetch("/api/stats").then(r => r.ok ? r.json() : null).then(setStats).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   return (
     <>
       <Head>
-        <title>PuffTip — Instant Solana Tips for Creators</title>
+        <title>PuffTip — The Solana Tipping Platform for Streamers</title>
+        <meta name="description" content="Get tipped in SOL with real-time OBS alerts, WebSocket delivery, donor leaderboards, and a custom creator page. Built on Solana." />
       </Head>
 
-      {/* ── Hero Section ──────────────────────────── */}
-      <Container maxW="container.lg" py={{ base: 16, md: 24 }}>
-        <VStack gap={8} alignItems="center" textAlign="center">
-          {/* Badge */}
-          <MotionBox
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Box
-              className="glass"
-              px={4}
-              py={1.5}
-              borderRadius="full"
-              display="inline-flex"
-              alignItems="center"
-              gap={2}
-            >
-              <Box className="pulse-dot" />
-              <Text fontSize="xs" color="whiteAlpha.700" fontWeight="600">
-                Live on Solana Devnet
+      {/* ═══ HERO ═══ */}
+      <Box position="relative" overflow="hidden">
+        <Box className="hero-glow" />
+        <Box className="hero-glow-2" />
+        <Box className="glow-orb purple" w="500px" h="500px" top="-150px" left="30%" />
+        <Box className="glow-orb green" w="350px" h="350px" bottom="-100px" right="20%" />
+
+        <Box position="absolute" top="8%" left="8%" transform="rotate(-12deg)" w="6rem" className="washi bg-washi-pink" />
+
+        <Container maxW="container.lg" py={{ base: "4rem", md: "7rem" }} position="relative" zIndex={2}>
+          <VStack gap={6} textAlign="center" maxW="720px" mx="auto">
+            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <Box className="solana-badge">◎ BUILT ON SOLANA</Box>
+            </M>
+
+            <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
+              <Heading as="h1" fontSize={{ base: "3xl", sm: "5xl", lg: "6xl" }} fontFamily="heading" lineHeight="1.08" color="brand.ink">
+                The next-gen{" "}
+                <Box as="span" className="gradient-text">tipping platform</Box>
+                {" "}for streamers
+              </Heading>
+            </M>
+
+            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+              <Text fontSize={{ base: "md", md: "lg" }} color="brand.inkSoft" fontFamily="body" maxW="560px" lineHeight="1.7">
+                Get tipped in SOL with real-time OBS alerts, animated notifications, a donor leaderboard, and your own custom creator page. Set up in 90 seconds.
+              </Text>
+            </M>
+
+            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+              <HStack gap={3} flexWrap="wrap" justifyContent="center" mt={2}>
+                <button className="premium-btn primary" onClick={() => router.push("/register")}>
+                  Start Getting Tipped →
+                </button>
+                <button className="premium-btn secondary" onClick={() => router.push("/explore")}>
+                  Explore Creators
+                </button>
+              </HStack>
+            </M>
+
+            <M initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }}>
+              <HStack gap={6} mt={4} flexWrap="wrap" justifyContent="center">
+                {[
+                  { val: "Sub-second", label: "finality" },
+                  { val: "<$0.001", label: "per tx" },
+                  { val: "95%", label: "to creator" },
+                ].map(s => (
+                  <VStack key={s.label} gap={0}>
+                    <Text fontFamily="heading" fontWeight="700" fontSize="lg" color="brand.ink">{s.val}</Text>
+                    <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">{s.label}</Text>
+                  </VStack>
+                ))}
+              </HStack>
+            </M>
+          </VStack>
+        </Container>
+      </Box>
+
+      {/* ═══ FEATURES ═══ */}
+      <Container maxW="container.lg" py="var(--section-py)">
+        <VStack gap={2} mb={10} textAlign="center">
+          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">FEATURES</Text>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
+            Everything a streamer needs
+          </Heading>
+          <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="500px">
+            Not another generic tip jar. Every feature is built for live content creators.
+          </Text>
+        </VStack>
+
+        <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", lg: "repeat(4, 1fr)" }} gap={4}>
+          {FEATURES.map((f, i) => (
+            <M key={f.title} className="gradient-border-card" p={5} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.04 * i }}>
+              <Text fontSize="2xl" mb={3}>{f.icon}</Text>
+              <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink" mb={1}>{f.title}</Text>
+              <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" lineHeight="1.6">{f.desc}</Text>
+            </M>
+          ))}
+        </Grid>
+      </Container>
+
+      {/* ═══ HOW IT WORKS ═══ */}
+      <Container maxW="container.lg" py="var(--section-py)">
+        <VStack gap={2} mb={10} textAlign="center">
+          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">HOW IT WORKS</Text>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
+            Go live in three steps
+          </Heading>
+        </VStack>
+
+        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
+          {[
+            { num: "01", title: "Create your page", desc: "Claim your @handle, connect your Solana wallet, write your bio. Takes 90 seconds.", icon: "📓" },
+            { num: "02", title: "Wire up OBS", desc: "Paste a single browser source URL. Tips show up on stream with sound alerts and animations.", icon: "🖥️" },
+            { num: "03", title: "Get tipped in SOL", desc: "Viewers send SOL with a message. Money lands in your wallet instantly. That's it.", icon: "◎" },
+          ].map((step, i) => (
+            <M key={step.num} className="glass-card" p={6} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 * i }}>
+              <HStack justifyContent="space-between" mb={4}>
+                <Text fontFamily="heading" fontSize="3xl" fontWeight="700" className="gradient-text">{step.num}</Text>
+                <Text fontSize="2xl">{step.icon}</Text>
+              </HStack>
+              <Text fontFamily="heading" fontSize="lg" fontWeight="700" color="brand.ink" mb={2}>{step.title}</Text>
+              <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" lineHeight="1.6">{step.desc}</Text>
+            </M>
+          ))}
+        </Grid>
+      </Container>
+
+      {/* ═══ STREAMERS ═══ */}
+      <Container maxW="container.lg" py="var(--section-py)">
+        <HStack justifyContent="space-between" alignItems="baseline" mb={8} flexWrap="wrap" gap={4}>
+          <Box>
+            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>CREATORS</Text>
+            <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">People on PuffTip</Heading>
+          </Box>
+          <Link href="/explore" style={{ textDecoration: "none" }}>
+            <Text fontFamily="body" fontSize="sm" color="brand.solana" fontWeight="600">see all →</Text>
+          </Link>
+        </HStack>
+
+        <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", lg: "repeat(3, 1fr)" }} gap={4}>
+          {STREAMERS.map((s, i) => (
+            <M key={s.handle} className="streamer-card" p={5} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 * i }} onClick={() => router.push(`/u/${s.handle}`)}>
+              <HStack gap={3} mb={3}>
+                <Box w={11} h={11} borderRadius="full" bg="brand.paperDeep" display="flex" alignItems="center" justifyContent="center" fontSize="xl" border="1.5px solid" borderColor="var(--theme-card-border)" flexShrink={0}>{s.emoji}</Box>
+                <Box flex={1} minW={0}>
+                  <HStack gap={2} alignItems="center">
+                    <Text fontFamily="heading" fontSize="md" fontWeight="700" color="brand.ink" lineClamp={1}>{s.name}</Text>
+                    {s.isLive && <Box className="live-badge"><Box className="live-dot" />LIVE</Box>}
+                  </HStack>
+                  <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">@{s.handle}</Text>
+                </Box>
+              </HStack>
+              <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" mb={3} lineHeight="1.5">{s.bio}</Text>
+              <HStack gap={4}>
+                <Text className="stat-pill">{s.fans} fans</Text>
+                <Text className="stat-pill">◎ {s.sol} SOL</Text>
+              </HStack>
+            </M>
+          ))}
+        </Grid>
+      </Container>
+
+      {/* ═══ WHY SOLANA ═══ */}
+      <Box className="cta-section" py="var(--section-py)">
+        <Container maxW="container.lg">
+          <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={10} alignItems="center">
+            <Box>
+              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>WHY SOLANA</Text>
+              <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
+                Built for speed,{" "}
+                <Box as="span" className="gradient-text">built for creators</Box>
+              </Heading>
+              <Text fontFamily="body" fontSize="md" color="brand.inkSoft" lineHeight="1.7">
+                Traditional tipping platforms take 30-50% in fees, hold your money for weeks, and require complex payouts. PuffTip settles every tip directly to your wallet in under a second.
               </Text>
             </Box>
-          </MotionBox>
-
-          {/* Main Heading */}
-          <MotionHeading
-            as="h1"
-            fontSize={{ base: "3xl", md: "5xl", lg: "6xl" }}
-            fontFamily="'Bangers', system-ui"
-            letterSpacing="2px"
-            lineHeight="1.1"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <span className="gradient-text">Tips Hit Different</span>
-            <br />
-            <Text as="span" color="white" fontSize={{ base: "2xl", md: "4xl", lg: "5xl" }}>
-              When They&apos;re On-Chain
-            </Text>
-          </MotionHeading>
-
-          {/* Subtitle */}
-          <MotionText
-            fontSize={{ base: "md", md: "lg" }}
-            color="whiteAlpha.600"
-            maxW="550px"
-            lineHeight="1.7"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            The easiest way for creators to receive instant tips in SOL.
-            Zero middlemen. Real-time notifications. Your wallet, your money.
-          </MotionText>
-
-          {/* CTA Buttons */}
-          <MotionBox
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <HStack gap={4} flexWrap="wrap" justifyContent="center">
-              {connected ? (
-                <>
-                  <Button
-                    size="lg"
-                    bg="linear-gradient(135deg, #7928CA 0%, #FF0080 100%)"
-                    color="white"
-                    _hover={{ opacity: 0.9, transform: "translateY(-2px)" }}
-                    transition="all 0.3s"
-                    borderRadius="xl"
-                    px={8}
-                    onClick={() => router.push("/register")}
-                    boxShadow="0 4px 20px rgba(121, 40, 202, 0.4)"
-                  >
-                    🍃 Start as Creator
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    color="whiteAlpha.800"
-                    borderColor="whiteAlpha.200"
-                    _hover={{ bg: "whiteAlpha.100", borderColor: "whiteAlpha.300" }}
-                    borderRadius="xl"
-                    px={8}
-                    onClick={() => router.push("/u/demo")}
-                  >
-                    Support a Creator
-                  </Button>
-                </>
-              ) : (
-                <Text color="whiteAlpha.500" fontSize="sm">
-                  Connect your wallet above to get started →
-                </Text>
-              )}
-            </HStack>
-          </MotionBox>
-        </VStack>
-      </Container>
-
-      {/* ── How It Works ─────────────────────────── */}
-      <Container maxW="container.lg" py={16}>
-        <VStack gap={12}>
-          <Heading
-            as="h2"
-            fontSize={{ base: "xl", md: "2xl" }}
-            fontFamily="'Fredoka', sans-serif"
-            color="white"
-            textAlign="center"
-          >
-            How It Works
-          </Heading>
-
-          <Grid
-            templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
-            gap={6}
-            w="full"
-          >
-            {[
-              {
-                icon: <FiZap size={24} />,
-                title: "1. Connect Wallet",
-                desc: "Link your Solana wallet (Phantom, Solflare, etc.) — no passwords, no emails.",
-                color: "#7928CA",
-              },
-              {
-                icon: <FiUsers size={24} />,
-                title: "2. Create Profile",
-                desc: "Pick a username, write a bio. Your tip page goes live instantly at /u/yourname.",
-                color: "#FF0080",
-              },
-              {
-                icon: <FiShield size={24} />,
-                title: "3. Receive Tips",
-                desc: "Share your link. Supporters send SOL directly — 95% goes to you, 5% platform fee.",
-                color: "#00BFFF",
-              },
-            ].map((step, i) => (
-              <MotionBox
-                key={step.title}
-                className="glass glass-hover"
-                p={6}
-                textAlign="center"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * i }}
-              >
-                <Box
-                  display="inline-flex"
-                  p={3}
-                  borderRadius="xl"
-                  bg={`${step.color}20`}
-                  color={step.color}
-                  mb={4}
-                >
-                  {step.icon}
-                </Box>
-                <Heading as="h3" size="sm" color="white" mb={2} fontFamily="'Fredoka', sans-serif">
-                  {step.title}
-                </Heading>
-                <Text fontSize="sm" color="whiteAlpha.600" lineHeight="1.6">
-                  {step.desc}
-                </Text>
-              </MotionBox>
-            ))}
-          </Grid>
-        </VStack>
-      </Container>
-
-      {/* ── Platform Stats ───────────────────────── */}
-      <Container maxW="container.lg" py={16}>
-        <VStack gap={8}>
-          <Heading
-            as="h2"
-            fontSize={{ base: "xl", md: "2xl" }}
-            fontFamily="'Fredoka', sans-serif"
-            color="white"
-            textAlign="center"
-          >
-            Platform Stats
-          </Heading>
-
-          {loading ? (
-            <VStack py={8}>
-              <Spinner size="lg" color="purple.400" />
-            </VStack>
-          ) : stats ? (
-            <Grid
-              templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }}
-              gap={4}
-              w="full"
-            >
+            <Grid templateColumns="1fr 1fr" gap={4}>
               {[
-                { label: "Total Tips", value: stats.totalTipsCount.toLocaleString(), icon: "💸" },
-                { label: "Volume", value: `${Number(stats.totalVolumeSol).toFixed(2)} SOL`, icon: "📊" },
-                { label: "Creators", value: stats.uniqueCreators.toLocaleString(), icon: "🎨" },
-                { label: "Supporters", value: stats.uniqueDonors.toLocaleString(), icon: "❤️" },
-                { label: "Platform Fees", value: `${Number(stats.platformFeeCollected).toFixed(2)} SOL`, icon: "🏦" },
-                { label: "Premium", value: stats.premiumUsersCount.toLocaleString(), icon: "⭐" },
+                { val: "<1s", label: "Settlement time" },
+                { val: "<$0.001", label: "Transaction cost" },
+                { val: "95%", label: "Goes to creator" },
+                { val: "0", label: "Holding period" },
               ].map((stat, i) => (
-                <GridItem key={stat.label}>
-                  <MotionBox
-                    className="glass glass-hover"
-                    p={5}
-                    textAlign="center"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4, delay: 0.05 * i }}
-                  >
-                    <Text fontSize="2xl" mb={1}>{stat.icon}</Text>
-                    <Text fontSize="xs" color="whiteAlpha.500" mb={1} textTransform="uppercase" letterSpacing="wider">
-                      {stat.label}
-                    </Text>
-                    <Heading size="md" color="white" fontFamily="'Fredoka', sans-serif">
-                      {stat.value}
-                    </Heading>
-                  </MotionBox>
-                </GridItem>
+                <M key={stat.label} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
+                  <Text fontFamily="heading" fontSize="2xl" fontWeight="700" className="gradient-text">{stat.val}</Text>
+                  <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" mt={1}>{stat.label}</Text>
+                </M>
               ))}
             </Grid>
-          ) : null}
-        </VStack>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* ═══ CTA ═══ */}
+      <Container maxW="container.md" py="var(--section-py)" textAlign="center">
+        <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
+            Start getting tipped{" "}
+            <Box as="span" className="gradient-text">tonight</Box>
+          </Heading>
+          <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="lg" mx="auto" mb={8} lineHeight="1.7">
+            Grab your handle. Paste an OBS URL. Start collecting SOL from your community in minutes.
+          </Text>
+          <HStack gap={3} justifyContent="center" flexWrap="wrap">
+            <button className="premium-btn primary" onClick={() => router.push("/register")}>
+              Create Your Page →
+            </button>
+            <button className="premium-btn secondary" onClick={() => router.push("/obs")}>
+              Read the OBS Guide
+            </button>
+          </HStack>
+        </M>
       </Container>
+
+      {/* ═══ STATS ═══ */}
+      {stats && (
+        <Container maxW="container.lg" py="var(--section-py)">
+          <VStack gap={2} mb={8} textAlign="center">
+            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">PLATFORM</Text>
+            <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">Stats on PuffTip</Heading>
+          </VStack>
+          <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={4}>
+            {[
+              { label: "Total Tips", value: stats.totalTipsCount.toLocaleString() },
+              { label: "SOL Volume", value: `◎ ${Number(stats.totalVolumeSol).toFixed(2)}` },
+              { label: "Creators", value: stats.uniqueCreators.toLocaleString() },
+              { label: "Supporters", value: stats.uniqueDonors.toLocaleString() },
+              { label: "Platform Fees", value: `◎ ${Number(stats.platformFeeCollected).toFixed(2)}` },
+              { label: "Premium", value: stats.premiumUsersCount.toLocaleString() },
+            ].map((s, i) => (
+              <GridItem key={s.label}>
+                <M className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.05 * i }}>
+                  <Text fontFamily="heading" fontSize="3xl" fontWeight="700" color="brand.ink">{s.value}</Text>
+                  <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" letterSpacing="wider" mt={1}>{s.label}</Text>
+                </M>
+              </GridItem>
+            ))}
+          </Grid>
+        </Container>
+      )}
+
+      {loading && (
+        <Container maxW="container.lg" py={12}>
+          <VStack><Spinner size="lg" color="brand.solana" /></VStack>
+        </Container>
+      )}
     </>
   );
 }

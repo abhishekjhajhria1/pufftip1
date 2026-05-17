@@ -13,6 +13,7 @@ import { NotificationRendererProps } from './types';
 
 /**
  * NotificationModal - Centered modal dialog
+ * Themed with Solana gradient accent and design token colors.
  */
 export const NotificationModal: React.FC<NotificationRendererProps> = ({ tip, onDismiss }) => {
   const [isOpen, setIsOpen] = React.useState(true);
@@ -31,7 +32,8 @@ export const NotificationModal: React.FC<NotificationRendererProps> = ({ tip, on
       left={0}
       right={0}
       bottom={0}
-      bg="rgba(0,0,0,0.5)"
+      bg="rgba(0,0,0,0.6)"
+      backdropFilter="blur(4px)"
       zIndex={9999}
       display="flex"
       alignItems="center"
@@ -39,16 +41,17 @@ export const NotificationModal: React.FC<NotificationRendererProps> = ({ tip, on
       onClick={handleClose}
     >
       <Box
-        bg="white"
-        boxShadow="0 20px 60px rgba(0,0,0,0.3)"
+        bg="var(--theme-bg)"
+        boxShadow="0 20px 60px rgba(0,0,0,0.4)"
         borderRadius="xl"
         overflow="hidden"
         maxW="400px"
+        border="1.5px solid var(--theme-card-border)"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header with gradient */}
-        <Box bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" padding={6} color="white">
-          <Text fontSize="2xl" fontWeight="bold" marginBottom={2}>
+        {/* Header with Solana gradient */}
+        <Box bg="linear-gradient(135deg, #9945FF 0%, #14F195 100%)" padding={6} color="white">
+          <Text fontSize="2xl" fontWeight="bold" marginBottom={2} fontFamily="var(--theme-font-heading)">
             💝 New Tip Received!
           </Text>
         </Box>
@@ -70,10 +73,10 @@ export const NotificationModal: React.FC<NotificationRendererProps> = ({ tip, on
               />
             )}
             <VStack align="start" gap={0}>
-              <Text fontWeight="bold" fontSize="lg">
+              <Text fontWeight="bold" fontSize="lg" color="brand.ink" fontFamily="var(--theme-font-heading)">
                 {tip.donorName}
               </Text>
-              <Text color="gray.500" fontSize="sm">
+              <Text color="brand.inkSoft" fontSize="sm" fontFamily="var(--theme-font-body)">
                 {new Date(tip.timestamp).toLocaleTimeString()}
               </Text>
             </VStack>
@@ -81,42 +84,42 @@ export const NotificationModal: React.FC<NotificationRendererProps> = ({ tip, on
 
           {/* Amount highlight */}
           <Box
-            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            bg="linear-gradient(135deg, #9945FF 0%, #14F195 100%)"
             color="white"
             padding={4}
             borderRadius="lg"
             width="100%"
             textAlign="center"
           >
-            <Text fontSize="sm" opacity={0.9}>
+            <Text fontSize="sm" opacity={0.9} fontFamily="var(--theme-font-body)">
               Tip Amount
             </Text>
-            <Text fontSize="3xl" fontWeight="bold">
+            <Text fontSize="3xl" fontWeight="bold" fontFamily="var(--theme-font-heading)">
               ◎ {tip.amount.toFixed(2)}
             </Text>
           </Box>
 
           {/* Message */}
           {tip.message && (
-            <Box width="100%" bg="gray.50" padding={3} borderRadius="md" borderLeft="4px" borderColor="purple.500">
-              <Text fontSize="sm" color="gray.600" fontStyle="italic">
+            <Box width="100%" bg="brand.paperDeep" padding={3} borderRadius="md" borderLeft="4px solid" borderColor="brand.solana">
+              <Text fontSize="sm" color="brand.ink" fontStyle="italic" fontFamily="var(--theme-font-body)">
                 {`"${tip.message}"`}
               </Text>
             </Box>
           )}
 
           {/* Stats footer */}
-          <Text fontSize="xs" color="gray.400" width="100%">
+          <Text fontSize="xs" color="brand.inkSoft" width="100%" fontFamily="var(--theme-font-body)">
             Tip ID: {tip.id.substring(0, 8)}...
           </Text>
         </VStack>
 
         {/* Footer */}
-        <HStack padding={4} gap={3} justify="flex-end" borderTopWidth="1px">
-          <Button variant="ghost" onClick={handleClose}>
+        <HStack padding={4} gap={3} justify="flex-end" borderTopWidth="1px" borderColor="var(--theme-card-border)">
+          <Button variant="ghost" onClick={handleClose} color="brand.ink" fontFamily="var(--theme-font-body)">
             Dismiss
           </Button>
-          <Button bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" color="white" onClick={handleClose}>
+          <Button bg="linear-gradient(135deg, #9945FF 0%, #14F195 100%)" color="white" fontFamily="var(--theme-font-heading)" _hover={{ opacity: 0.9 }} onClick={handleClose}>
             Thanks!
           </Button>
         </HStack>
