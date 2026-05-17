@@ -102,8 +102,8 @@ export default function Home() {
                 <button className="premium-btn primary" onClick={() => router.push("/register")}>
                   Start Getting Tipped →
                 </button>
-                <button className="premium-btn secondary" onClick={() => router.push("/explore")}>
-                  Explore Creators
+                <button className="premium-btn secondary" onClick={() => router.push("/for-creators")}>
+                  See What You Get
                 </button>
               </HStack>
             </M>
@@ -242,6 +242,31 @@ export default function Home() {
         </Container>
       </Box>
 
+      {/* ═══ SEE IT IN ACTION ═══ */}
+      <Container maxW="container.lg" py="var(--section-py)">
+        <VStack gap={2} mb={10} textAlign="center">
+          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">SEE IT IN ACTION</Text>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
+            Built for{" "}
+            <Box as="span" className="gradient-text">every creator</Box>
+          </Heading>
+        </VStack>
+        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4}>
+          {[
+            { icon: "🖥️", title: "For Streamers", desc: "OBS overlay, 4 notification modes, sound alerts, and real-time tip delivery.", href: "/for-streamers" },
+            { icon: "🎨", title: "For Creators", desc: "Custom tip page, donor leaderboard, tip wall, dual themes, and instant payments.", href: "/for-creators" },
+            { icon: "🎮", title: "Live Demos", desc: "Interactive previews of every feature — notifications, sounds, themes, and more.", href: "/demos" },
+          ].map((card, i) => (
+            <M key={card.title} className="gradient-border-card" p={6} cursor="pointer" onClick={() => router.push(card.href)} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
+              <Text fontSize="2xl" mb={3}>{card.icon}</Text>
+              <Text fontFamily="heading" fontSize="lg" fontWeight="700" color="brand.ink" mb={2}>{card.title}</Text>
+              <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" lineHeight="1.6" mb={3}>{card.desc}</Text>
+              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="600">Learn more →</Text>
+            </M>
+          ))}
+        </Grid>
+      </Container>
+
       {/* ═══ CTA ═══ */}
       <Container maxW="container.md" py="var(--section-py)" textAlign="center">
         <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -256,8 +281,8 @@ export default function Home() {
             <button className="premium-btn primary" onClick={() => router.push("/register")}>
               Create Your Page →
             </button>
-            <button className="premium-btn secondary" onClick={() => router.push("/obs")}>
-              Read the OBS Guide
+            <button className="premium-btn secondary" onClick={() => router.push("/demos")}>
+              See Live Demos
             </button>
           </HStack>
         </M>

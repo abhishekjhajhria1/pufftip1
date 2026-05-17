@@ -14,7 +14,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "@/components/ThemeProvider";
-import { FiMenu, FiX, FiHome, FiSearch, FiMonitor, FiDollarSign, FiLayout } from "react-icons/fi";
+import { FiMenu, FiX, FiHome, FiSearch, FiMonitor, FiLayout, FiUsers, FiPlay } from "react-icons/fi";
 
 const WalletMultiButton = dynamic(
   () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
@@ -28,9 +28,9 @@ interface LayoutProps {
 const NAV_LINKS = [
   { label: "home", href: "/", icon: <FiHome size={16} /> },
   { label: "explore", href: "/explore", icon: <FiSearch size={16} /> },
+  { label: "for creators", href: "/for-creators", icon: <FiUsers size={16} /> },
+  { label: "demos", href: "/demos", icon: <FiPlay size={16} /> },
   { label: "dashboard", href: "/dashboard", icon: <FiLayout size={16} /> },
-  { label: "obs setup", href: "/obs", icon: <FiMonitor size={16} /> },
-  { label: "fees", href: "/pricing", icon: <FiDollarSign size={16} /> },
 ];
 
 function Navbar() {
@@ -190,25 +190,26 @@ function Footer() {
   return (
     <Box as="footer" className="site-footer" py={12} px={4} mt={10}>
       <Container maxW="container.xl">
-        <Grid templateColumns={{ base: "1fr", md: "2fr 1fr 1fr" }} gap={{ base: 8, md: 12 }}>
-          <GridItem>
+        <Grid templateColumns={{ base: "1fr 1fr", md: "2fr 1fr 1fr 1fr" }} gap={{ base: 6, md: 12 }}>
+          <GridItem colSpan={{ base: 2, md: 1 }}>
             <Text fontFamily="heading" fontSize="xl" fontWeight="700" color="brand.ink" mb={3}>
               pufftip<Box as="span" className="solana-gradient">.</Box>
             </Text>
             <Text color="brand.inkSoft" fontSize="sm" fontFamily="body" maxW="300px" lineHeight="1.7">
-              the next-gen Solana tipping platform for streamers. instant payments, real-time OBS alerts, zero middlemen.
+              the next-gen Solana tipping platform for creators. instant payments, real-time OBS alerts, zero middlemen.
             </Text>
             <Box mt={3} className="solana-badge" display="inline-flex">◎ Powered by Solana</Box>
           </GridItem>
 
           <GridItem>
-            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Navigate</Text>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Product</Text>
             <VStack alignItems="flex-start" gap={2}>
               {[
-                { label: "explore streamers", href: "/explore" },
-                { label: "creator dashboard", href: "/dashboard" },
-                { label: "obs setup guide", href: "/obs" },
-                { label: "fees & pricing", href: "/pricing" },
+                { label: "for streamers", href: "/for-streamers" },
+                { label: "for creators", href: "/for-creators" },
+                { label: "features", href: "/features" },
+                { label: "demos", href: "/demos" },
+                { label: "pricing", href: "/pricing" },
               ].map((link) => (
                 <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
               ))}
@@ -216,12 +217,31 @@ function Footer() {
           </GridItem>
 
           <GridItem>
-            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Platform</Text>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Resources</Text>
             <VStack alignItems="flex-start" gap={2}>
-              <Text fontSize="sm" color="brand.inkSoft" fontFamily="body">built on Solana</Text>
-              <Text fontSize="sm" color="brand.inkSoft" fontFamily="body">no signups to browse</Text>
-              <Text fontSize="sm" color="brand.inkSoft" fontFamily="body">open for creators</Text>
-              <Box px={3} py={1} border="1px solid" borderColor="brand.inkSoft" borderRadius="md" mt={1}>
+              {[
+                { label: "explore creators", href: "/explore" },
+                { label: "obs setup guide", href: "/obs" },
+                { label: "dashboard", href: "/dashboard" },
+                { label: "faq & help", href: "/faq" },
+                { label: "about pufftip", href: "/about" },
+              ].map((link) => (
+                <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
+              ))}
+            </VStack>
+          </GridItem>
+
+          <GridItem>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Showcase</Text>
+            <VStack alignItems="flex-start" gap={2}>
+              {[
+                { label: "🎸 smokey jazz", href: "/showcase/smokeyjazz" },
+                { label: "🎨 pixel artist", href: "/showcase/pixelartist" },
+                { label: "💻 code streamer", href: "/showcase/codingstreamer" },
+              ].map((link) => (
+                <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
+              ))}
+              <Box px={3} py={1} border="1px solid" borderColor="brand.inkSoft" borderRadius="md" mt={2}>
                 <Text fontSize="xs" color="brand.ink" fontFamily="body" fontWeight="700">Devnet</Text>
               </Box>
             </VStack>
@@ -233,7 +253,11 @@ function Footer() {
             <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">
               © 2026 PuffTip. built with <Box as="span" className="solana-gradient">Solana</Box>.
             </Text>
-            <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">devnet — no real money.</Text>
+            <HStack gap={4}>
+              <Link href="/faq" className="footer-link" style={{ fontSize: "12px" }}>FAQ</Link>
+              <Link href="/about" className="footer-link" style={{ fontSize: "12px" }}>About</Link>
+              <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">devnet — no real money.</Text>
+            </HStack>
           </HStack>
         </Box>
       </Container>
