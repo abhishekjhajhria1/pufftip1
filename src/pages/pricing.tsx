@@ -34,10 +34,8 @@ export default function PricingPage() {
         <VStack gap={10} align="stretch">
           {/* Header */}
           <VStack gap={2} textAlign="center" maxW="600px" mx="auto">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">PRICING</Text>
             <Heading as="h1" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-              Simple, transparent{" "}
-              <Box as="span" className="gradient-text">pricing</Box>
+              Simple, transparent pricing
             </Heading>
             <Text fontFamily="body" fontSize="md" color="brand.inkSoft" lineHeight="1.7">
               No subscriptions, no hidden fees. PuffTip takes a small 5% platform fee — 95% goes directly to your Solana wallet.
@@ -45,17 +43,14 @@ export default function PricingPage() {
           </VStack>
 
           {/* Pricing Card */}
-          <M className="gradient-border-card" maxW="480px" mx="auto" w="full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <M className="glass-card" maxW="480px" mx="auto" w="full" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <Box p={8}>
-              <HStack justifyContent="space-between" mb={6}>
-                <Box>
-                  <Text fontFamily="heading" fontSize="sm" fontWeight="600" color="brand.inkSoft" mb={1}>Creator Plan</Text>
-                  <Heading fontFamily="heading" fontSize="4xl" color="brand.ink">Free</Heading>
-                </Box>
-                <Box className="solana-badge">◎ SOLANA</Box>
-              </HStack>
+              <Box mb={6}>
+                <Text fontFamily="heading" fontSize="sm" fontWeight="600" color="brand.inkSoft" mb={1}>Creator Plan</Text>
+                <Heading fontFamily="heading" fontSize="4xl" color="brand.ink">Free</Heading>
+              </Box>
 
-              <Box h="2px" className="solana-accent" mb={6} opacity={0.5} />
+              <Box h="1px" bg="var(--theme-card-border)" mb={6} />
 
               <VStack align="stretch" gap={3} mb={6}>
                 {FEATURES.map(f => (
@@ -91,14 +86,14 @@ export default function PricingPage() {
 
           {/* Comparison */}
           <Box>
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={4} textAlign="center">COMPARISON</Text>
+            <Heading as="h2" fontSize={{ base: "xl", md: "2xl" }} fontFamily="heading" color="brand.ink" mb={4} textAlign="center">How we compare</Heading>
             <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4} maxW="800px" mx="auto">
               {[
                 { platform: "Traditional Platforms", fee: "30-50%", speed: "7-30 days", cost: "$0.30+ per tx" },
                 { platform: "ETH-based tips", fee: "0%", speed: "~15 seconds", cost: "$2-50+ gas" },
                 { platform: "PuffTip (Solana)", fee: "5%", speed: "<1 second", cost: "<$0.001", highlight: true },
               ].map((p, i) => (
-                <M key={p.platform} className={p.highlight ? "gradient-border-card" : "glass-card"} p={5} textAlign="center" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
+                <M key={p.platform} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 * i }}>
                   <Text fontFamily="heading" fontSize="sm" fontWeight="700" color={p.highlight ? "brand.solana" : "brand.ink"} mb={4}>{p.platform}</Text>
                   <VStack gap={3}>
                     <Box>

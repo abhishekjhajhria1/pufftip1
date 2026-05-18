@@ -17,6 +17,8 @@ export default function DemosPage() {
   const [activeStack, setActiveStack] = useState("stack");
   const [previewKey, setPreviewKey] = useState(0);
   const [playingSound, setPlayingSound] = useState<string | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<"notebook" | "studio">("studio");
+  const [previewAccent, setPreviewAccent] = useState("#9945FF");
 
   const triggerNotif = useCallback((mode: string) => {
     setActiveNotif(null);
@@ -36,9 +38,7 @@ export default function DemosPage() {
         <Box className="glow-orb purple" w="500px" h="500px" top="-200px" left="40%" />
         <Container maxW="container.lg" py={{ base: "3rem", md: "5rem" }} position="relative" zIndex={2}>
           <VStack gap={4} textAlign="center" maxW="600px" mx="auto">
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Box className="solana-badge">🎮 INTERACTIVE DEMOS</Box>
-            </M>
+
             <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <Heading as="h1" fontSize={{ base: "3xl", md: "5xl" }} fontFamily="heading" color="brand.ink">
                 See PuffTip <Box as="span" className="gradient-text">in action</Box>
@@ -56,9 +56,8 @@ export default function DemosPage() {
       {/* NOTIFICATION MODES */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={8} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">TRY IT</Text>
-          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">Notification Modes</Heading>
-          <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">Click each to preview</Text>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">notification modes</Heading>
+          <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">click each to preview</Text>
         </VStack>
         <Grid templateColumns={{ base: "1fr", md: "2fr 1fr" }} gap={6}>
           <GridItem>
@@ -120,8 +119,7 @@ export default function DemosPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.lg">
           <VStack gap={2} mb={8} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">VISUAL EFFECTS</Text>
-            <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">Content Styles</Heading>
+            <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">content styles</Heading>
           </VStack>
           <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(5, 1fr)" }} gap={4}>
             {[
@@ -144,8 +142,7 @@ export default function DemosPage() {
       {/* STACKING MODES */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={8} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">MULTIPLE TIPS</Text>
-          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">Stacking Modes</Heading>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">stacking modes</Heading>
         </VStack>
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
           {[
@@ -166,8 +163,7 @@ export default function DemosPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.lg">
           <VStack gap={2} mb={8} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">AUDIO</Text>
-            <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">Sound Alert Board</Heading>
+            <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">sound alert board</Heading>
           </VStack>
           <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(5, 1fr)" }} gap={4} maxW="650px" mx="auto">
             {[
@@ -185,11 +181,174 @@ export default function DemosPage() {
         </Container>
       </Box>
 
+      {/* THEME PREVIEW */}
+      <Container maxW="container.lg" py="var(--section-py)">
+        <VStack gap={2} mb={8} textAlign="center">
+          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">theme preview</Heading>
+          <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">toggle between notebook and studio — just for this preview</Text>
+        </VStack>
+        <VStack gap={4} align="center">
+          <HStack gap={2}>
+            <button
+              className={`premium-btn ${previewTheme === "notebook" ? "primary" : "secondary"}`}
+              style={{ padding: "6px 16px", fontSize: "13px" }}
+              onClick={() => setPreviewTheme("notebook")}
+            >✎ notebook</button>
+            <button
+              className={`premium-btn ${previewTheme === "studio" ? "primary" : "secondary"}`}
+              style={{ padding: "6px 16px", fontSize: "13px" }}
+              onClick={() => setPreviewTheme("studio")}
+            >✨ studio</button>
+          </HStack>
+          <Box className="theme-compare-container" w="full" maxW="800px">
+            <M
+              key={previewTheme}
+              className={`theme-preview ${previewTheme}-preview`}
+              gridColumn="1 / -1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Box className="theme-label">{previewTheme === "notebook" ? "✎ Notebook" : "✨ Studio"}</Box>
+              <Box
+                bg={previewTheme === "notebook" ? "#FCFBF8" : "#0A0A0B"}
+                p={6}
+                minH="280px"
+              >
+                {/* Profile card */}
+                <Box
+                  bg={previewTheme === "notebook" ? "white" : "rgba(255,255,255,0.04)"}
+                  borderRadius={previewTheme === "notebook" ? "12px" : "14px"}
+                  border={`1px solid ${previewTheme === "notebook" ? "rgba(27,27,27,0.12)" : "rgba(255,255,255,0.08)"}`}
+                  p={5}
+                  mb={4}
+                >
+                  <HStack gap={3} mb={2}>
+                    <Box
+                      w={10} h={10} borderRadius="full"
+                      bg={previewTheme === "notebook" ? "#FFC900" : "linear-gradient(135deg, #9945FF, #14F195)"}
+                      display="flex" alignItems="center" justifyContent="center"
+                      fontSize="lg"
+                      border={previewTheme === "notebook" ? "1.5px solid #1B1B1B" : "none"}
+                      fontFamily={previewTheme === "notebook" ? "'Patrick Hand', cursive" : "'Inter', sans-serif"}
+                      fontWeight="700"
+                      color={previewTheme === "notebook" ? "#1B1B1B" : "white"}
+                    >S</Box>
+                    <Box>
+                      <Text fontFamily={previewTheme === "notebook" ? "'Patrick Hand', cursive" : "'Inter', sans-serif"} fontWeight="700" fontSize="md" color={previewTheme === "notebook" ? "#1B1B1B" : "#EDEDEF"}>SmokeCreator</Text>
+                      <Text fontFamily={previewTheme === "notebook" ? "'Space Grotesk', sans-serif" : "'Inter', sans-serif"} fontSize="xs" color={previewTheme === "notebook" ? "#6B6B6B" : "rgba(255,255,255,0.5)"}>late-night streams & lo-fi sets</Text>
+                    </Box>
+                  </HStack>
+                </Box>
+                {/* Tip notes */}
+                <Grid templateColumns="1fr 1fr" gap={3}>
+                  {[
+                    { user: "@fan_123", msg: "love it! 🎨", color: previewTheme === "notebook" ? "#FFC900" : "rgba(255,255,255,0.04)" },
+                    { user: "@collector", msg: "amazing work", color: previewTheme === "notebook" ? "#FF66F4" : "rgba(255,255,255,0.04)" },
+                  ].map(tip => (
+                    <Box
+                      key={tip.user}
+                      bg={tip.color}
+                      borderRadius={previewTheme === "notebook" ? "12px" : "14px"}
+                      border={previewTheme === "studio" ? "1px solid rgba(255,255,255,0.08)" : "none"}
+                      p={3}
+                      transform={previewTheme === "notebook" ? "rotate(-1deg)" : "none"}
+                    >
+                      <Text fontFamily={previewTheme === "notebook" ? "'Patrick Hand', cursive" : "'Inter', sans-serif"} fontSize="xs" color={previewTheme === "notebook" ? "#1B1B1B" : "rgba(255,255,255,0.5)"} fontWeight="700">{tip.user}</Text>
+                      <Text fontFamily={previewTheme === "notebook" ? "'Patrick Hand', cursive" : "'Inter', sans-serif"} fontSize="sm" color={previewTheme === "notebook" ? "#1B1B1B" : "#EDEDEF"}>{tip.msg}</Text>
+                    </Box>
+                  ))}
+                </Grid>
+              </Box>
+            </M>
+          </Box>
+        </VStack>
+      </Container>
+
+      {/* DURATION TIERS */}
+      <Box className="cta-section" py="var(--section-py)">
+        <Container maxW="container.lg">
+          <VStack gap={2} mb={8} textAlign="center">
+            <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">duration tiers</Heading>
+            <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">bigger tips stay on screen longer — reward your biggest fans</Text>
+          </VStack>
+          <Grid templateColumns={{ base: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }} gap={4} maxW="800px" mx="auto">
+            {[
+              { amount: "< 0.5 SOL", duration: "3 seconds", icon: "💨", label: "Quick" },
+              { amount: "0.5–2 SOL", duration: "5 seconds", icon: "🌿", label: "Standard" },
+              { amount: "2–10 SOL", duration: "8 seconds", icon: "🔥", label: "Featured" },
+              { amount: "10+ SOL", duration: "12 seconds", icon: "🐋", label: "Whale" },
+            ].map((tier, i) => (
+              <M key={tier.label} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.06 * i }}>
+                <Text fontSize="2xl" mb={2}>{tier.icon}</Text>
+                <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink" mb={1}>{tier.label}</Text>
+                <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" mb={2}>{tier.amount}</Text>
+                <Text fontFamily="heading" fontSize="lg" fontWeight="700" className="gradient-text">{tier.duration}</Text>
+              </M>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* ACCENT COLORS */}
+      <Container maxW="container.lg" py="var(--section-py)">
+        <VStack gap={2} mb={8} textAlign="center">
+          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">accent colors</Heading>
+          <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">pick an accent for your tip page — make it yours</Text>
+        </VStack>
+        <HStack gap={4} justifyContent="center" flexWrap="wrap" mb={6}>
+          {[
+            { name: "Solana", color: "#9945FF" },
+            { name: "Ocean", color: "#0EA5E9" },
+            { name: "Sunset", color: "#F97316" },
+            { name: "Forest", color: "#22C55E" },
+            { name: "Rose", color: "#F43F5E" },
+            { name: "Gold", color: "#EAB308" },
+          ].map(c => (
+            <VStack
+              key={c.name}
+              gap={2}
+              cursor="pointer"
+              onClick={() => setPreviewAccent(c.color)}
+              opacity={previewAccent === c.color ? 1 : 0.6}
+              transition="opacity 0.2s"
+            >
+              <Box
+                w={12} h={12} borderRadius="full" bg={c.color}
+                border={previewAccent === c.color ? "3px solid var(--theme-text)" : "2px solid var(--theme-card-border)"}
+                transition="all 0.2s"
+                transform={previewAccent === c.color ? "scale(1.1)" : "none"}
+              />
+              <Text fontFamily="body" fontSize="xs" color="brand.ink" fontWeight={previewAccent === c.color ? "700" : "400"}>{c.name}</Text>
+            </VStack>
+          ))}
+        </HStack>
+        {/* Preview card with accent */}
+        <Box maxW="360px" mx="auto">
+          <M className="glass-card" p={5} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={previewAccent}>
+            <HStack gap={3} mb={3}>
+              <Box w={10} h={10} borderRadius="full" bg={previewAccent} display="flex" alignItems="center" justifyContent="center" fontSize="lg" color="white" fontWeight="700" fontFamily="heading">P</Box>
+              <Box>
+                <Text fontFamily="heading" fontSize="md" fontWeight="700" color="brand.ink">Preview Creator</Text>
+                <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">your accent color in action</Text>
+              </Box>
+            </HStack>
+            <Box h="2px" bg={previewAccent} borderRadius="full" mb={3} opacity={0.6} />
+            <Box bg="brand.paperDeep" borderRadius="md" p={3} border="1px solid" borderColor="var(--theme-card-border)">
+              <HStack justifyContent="space-between" mb={1}>
+                <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" fontWeight="700">@supporter</Text>
+                <Text fontFamily="heading" fontSize="xs" fontWeight="700" style={{ color: previewAccent }}>◎ 5.00</Text>
+              </HStack>
+              <Text fontFamily="heading" fontSize="sm" color="brand.ink">great stream, keep it up! 🔥</Text>
+            </Box>
+          </M>
+        </Box>
+      </Container>
+
       {/* SHOWCASE PROFILES */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={8} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">SHOWCASE</Text>
-          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">Example Creator Pages</Heading>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">example creator pages</Heading>
         </VStack>
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
           {[
@@ -197,7 +356,7 @@ export default function DemosPage() {
             { emoji: "🎨", name: "Pixel Artist", handle: "pixelartist", type: "Digital Artist", desc: "Notebook theme, confetti notifications, gallery-style", tags: ["Notebook", "Toast", "Confetti"] },
             { emoji: "💻", name: "Code Streamer", handle: "codingstreamer", type: "Tech Streamer", desc: "Studio theme, simple notifications, minimal layout", tags: ["Studio", "Banner", "Simple"] },
           ].map((c, i) => (
-            <M key={c.handle} className="gradient-border-card" p={6} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }} cursor="pointer" onClick={() => router.push(`/showcase/${c.handle}`)}>
+            <M key={c.handle} className="glass-card" p={6} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 * i }} cursor="pointer" onClick={() => router.push(`/showcase/${c.handle}`)}>
               <HStack gap={3} mb={4}>
                 <Box className="showcase-avatar" w="56px" h="56px" fontSize="1.8rem">{c.emoji}</Box>
                 <Box><Text fontFamily="heading" fontSize="lg" fontWeight="700" color="brand.ink">{c.name}</Text><Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="600">{c.type}</Text></Box>
@@ -206,7 +365,7 @@ export default function DemosPage() {
               <HStack gap={2} flexWrap="wrap">
                 {c.tags.map(t => <Text key={t} className="stat-pill">✨ {t}</Text>)}
               </HStack>
-              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="600" mt={4}>View demo →</Text>
+              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="600" mt={4}>view demo →</Text>
             </M>
           ))}
         </Grid>

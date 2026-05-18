@@ -77,9 +77,7 @@ export default function FAQPage() {
       {/* HERO */}
       <Container maxW="container.lg" py={{ base: "3rem", md: "5rem" }}>
         <VStack gap={4} textAlign="center" maxW="600px" mx="auto">
-          <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Box className="solana-badge">❓ FAQ</Box>
-          </M>
+
           <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <Heading as="h1" fontSize={{ base: "3xl", md: "5xl" }} fontFamily="heading" color="brand.ink">
               Frequently asked <Box as="span" className="gradient-text">questions</Box>
@@ -98,7 +96,7 @@ export default function FAQPage() {
         <VStack gap={10} align="stretch">
           {FAQ_SECTIONS.map((section, si) => (
             <M key={section.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 * si }}>
-              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={4}>{section.title}</Text>
+              <Heading as="h3" fontSize="md" fontFamily="heading" color="brand.ink" mb={4}>{section.title}</Heading>
               <VStack gap={2} align="stretch">
                 {section.items.map((item, ii) => {
                   const key = `${si}-${ii}`;

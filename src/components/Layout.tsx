@@ -73,7 +73,7 @@ function Navbar() {
                     color={isActive ? "brand.ink" : "brand.inkSoft"}
                     fontFamily="heading"
                     fontSize="sm"
-                    fontWeight={isActive ? "700" : "500"}
+                    fontWeight={isActive ? "700" : "400"}
                     _hover={{ color: "brand.ink", bg: "transparent" }}
                     onClick={() => router.push(link.href)}
                     borderRadius="md"
@@ -85,17 +85,6 @@ function Navbar() {
                     position="relative"
                   >
                     {link.label}
-                    {isActive && (
-                      <Box
-                        position="absolute"
-                        bottom="-2px"
-                        left="20%"
-                        right="20%"
-                        h="2px"
-                        className="solana-accent"
-                        borderRadius="full"
-                      />
-                    )}
                   </Button>
                 );
               })}
@@ -198,7 +187,6 @@ function Footer() {
             <Text color="brand.inkSoft" fontSize="sm" fontFamily="body" maxW="300px" lineHeight="1.7">
               the next-gen Solana tipping platform for creators. instant payments, real-time OBS alerts, zero middlemen.
             </Text>
-            <Box mt={3} className="solana-badge" display="inline-flex">◎ Powered by Solana</Box>
           </GridItem>
 
           <GridItem>

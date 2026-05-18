@@ -43,7 +43,6 @@ export default function ExplorePage() {
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={8} align="stretch">
           <VStack gap={2} alignItems="flex-start">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">DISCOVER</Text>
             <Heading as="h1" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
               Explore Streamers
             </Heading>

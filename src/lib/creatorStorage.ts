@@ -1,8 +1,12 @@
+export type TipCardStyle = "sticky-note" | "clean" | "minimal";
+
 export interface StoredCreator {
   username: string;
   displayName: string;
   bio: string;
   walletAddress: string;
+  accentColor?: string;
+  tipCardStyle?: TipCardStyle;
 }
 
 const STORAGE_KEY = "pufftip_creator";

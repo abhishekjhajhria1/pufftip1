@@ -40,9 +40,7 @@ export default function FeaturesPage() {
         <Box className="glow-orb purple" w="500px" h="500px" top="-200px" right="20%" />
         <Container maxW="container.lg" py={{ base: "3rem", md: "5rem" }} position="relative" zIndex={2}>
           <VStack gap={4} textAlign="center" maxW="600px" mx="auto">
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Box className="solana-badge">🛠️ FEATURES</Box>
-            </M>
+
             <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <Heading as="h1" fontSize={{ base: "3xl", md: "5xl" }} fontFamily="heading" color="brand.ink">
                 Everything you get with <Box as="span" className="gradient-text">PuffTip</Box>

@@ -38,9 +38,7 @@ export default function AboutPage() {
         <Box className="glow-orb purple" w="500px" h="500px" top="-200px" left="30%" />
         <Container maxW="container.lg" py={{ base: "4rem", md: "6rem" }} position="relative" zIndex={2}>
           <VStack gap={6} textAlign="center" maxW="650px" mx="auto">
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Box className="solana-badge">◎ ABOUT PUFFTIP</Box>
-            </M>
+
             <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               <Heading as="h1" fontSize={{ base: "3xl", md: "5xl" }} fontFamily="heading" color="brand.ink">
                 Creators deserve{" "}
@@ -60,7 +58,7 @@ export default function AboutPage() {
       <Container maxW="container.lg" py="var(--section-py)">
         <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={10} alignItems="center">
           <Box>
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>OUR MISSION</Text>
+
             <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink" mb={4}>
               Make creator payments{" "}
               <Box as="span" className="gradient-text">instant, transparent, and fair</Box>
@@ -98,9 +96,8 @@ export default function AboutPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.lg">
           <VStack gap={2} mb={10} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">TECHNOLOGY</Text>
             <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">
-              Why we chose <Box as="span" className="gradient-text">Solana</Box>
+              why we chose <Box as="span" className="gradient-text">Solana</Box>
             </Heading>
           </VStack>
 
@@ -110,7 +107,7 @@ export default function AboutPage() {
               { icon: "💰", title: "Cost", desc: "Transaction fees are less than $0.001. Tipping $0.50 is viable — try that on Ethereum.", stat: "<$0.001" },
               { icon: "🌐", title: "Scale", desc: "65,000 TPS capacity. PuffTip can handle any creator's audience without breaking a sweat.", stat: "65k TPS" },
             ].map((item, i) => (
-              <M key={item.title} className="gradient-border-card" p={6} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
+              <M key={item.title} className="glass-card" p={6} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 * i }}>
                 <Text fontSize="2xl" mb={3}>{item.icon}</Text>
                 <Text fontFamily="heading" fontSize="lg" fontWeight="700" color="brand.ink" mb={2}>{item.title}</Text>
                 <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" lineHeight="1.6" mb={4}>{item.desc}</Text>
@@ -124,8 +121,7 @@ export default function AboutPage() {
       {/* PLATFORM STATS */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={8} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">PLATFORM</Text>
-          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">PuffTip in numbers</Heading>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">pufftip in numbers</Heading>
         </VStack>
 
         {stats ? (
@@ -151,9 +147,8 @@ export default function AboutPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.md">
           <VStack gap={2} mb={10} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">ROADMAP</Text>
             <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">
-              What&apos;s next
+              what&apos;s next
             </Heading>
           </VStack>
 

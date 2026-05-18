@@ -1,13 +1,13 @@
 /**
- * Home Page — Premium Marketing Landing
+ * Home Page — Clean Marketing Landing
  *
- * Conversion-focused layout:
- * 1. Hero — gradient headline, Solana badge, social proof, ambient glows
- * 2. Features — 8 built features in gradient-border cards
+ * Sections:
+ * 1. Hero — clean headline, subtitle, CTAs, social proof
+ * 2. Features — 8 built features in clean cards
  * 3. How It Works — 3-step timeline
  * 4. Streamers — featured creator grid
- * 5. Why Solana — blockchain advantage section
- * 6. CTA — conversion section with gradient bg
+ * 5. Why Solana — blockchain advantage
+ * 6. CTA — conversion section
  * 7. Stats — live platform numbers
  */
 
@@ -34,13 +34,13 @@ const M = motion(Box);
 
 const FEATURES = [
   { icon: "🖥️", title: "OBS Overlay", desc: "One browser source URL. Tips appear on stream as animated notifications in real-time." },
-  { icon: "⚡", title: "Instant SOL", desc: "Tips hit your wallet in under a second. No holding periods, no minimum payout, no middlemen." },
+  { icon: "⚡", title: "Instant SOL", desc: "Tips hit your wallet in under a second. No holding periods, no minimum payout." },
   { icon: "🌐", title: "WebSocket Live", desc: "Tips are pushed instantly via WebSocket. Your overlay stays perfectly in sync." },
-  { icon: "🔔", title: "Notification System", desc: "Toast, modal, slide-in, or banner. Sound alerts, display modes — you pick what fits your stream." },
-  { icon: "📓", title: "Tip Wall", desc: "Every tip shows as a sticky note on your page. Viewers see the conversation happening live." },
-  { icon: "🏆", title: "Donor Leaderboard", desc: "Top supporters ranked by total tips. Give your biggest fans the recognition they deserve." },
-  { icon: "📊", title: "Creator Dashboard", desc: "Track tips, earnings, supporter count. Share your link, manage everything from one place." },
-  { icon: "🎨", title: "Dual Themes", desc: "Notebook for the hand-drawn vibe, Studio for the sleek dark mode. Your page, your aesthetic." },
+  { icon: "🔔", title: "Notification System", desc: "Toast, modal, slide-in, or banner — you pick what fits your stream." },
+  { icon: "📓", title: "Tip Wall", desc: "Every tip shows as a sticky note on your page. Viewers see the conversation live." },
+  { icon: "🏆", title: "Donor Leaderboard", desc: "Top supporters ranked by total tips. Give your biggest fans recognition." },
+  { icon: "📊", title: "Creator Dashboard", desc: "Track tips, earnings, supporter count. Manage everything from one place." },
+  { icon: "🎨", title: "Dual Themes", desc: "Notebook for the hand-drawn vibe, Studio for sleek dark mode." },
 ];
 
 const STREAMERS = [
@@ -72,18 +72,10 @@ export default function Home() {
       <Box position="relative" overflow="hidden">
         <Box className="hero-glow" />
         <Box className="hero-glow-2" />
-        <Box className="glow-orb purple" w="500px" h="500px" top="-150px" left="30%" />
-        <Box className="glow-orb green" w="350px" h="350px" bottom="-100px" right="20%" />
 
-        <Box position="absolute" top="8%" left="8%" transform="rotate(-12deg)" w="6rem" className="washi bg-washi-pink" />
-
-        <Container maxW="container.lg" py={{ base: "4rem", md: "7rem" }} position="relative" zIndex={2}>
-          <VStack gap={6} textAlign="center" maxW="720px" mx="auto">
+        <Container maxW="container.lg" py={{ base: "5rem", md: "8rem" }} position="relative" zIndex={2}>
+          <VStack gap={6} textAlign="center" maxW="680px" mx="auto">
             <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <Box className="solana-badge">◎ BUILT ON SOLANA</Box>
-            </M>
-
-            <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
               <Heading as="h1" fontSize={{ base: "3xl", sm: "5xl", lg: "6xl" }} fontFamily="heading" lineHeight="1.08" color="brand.ink">
                 The next-gen{" "}
                 <Box as="span" className="gradient-text">tipping platform</Box>
@@ -91,13 +83,13 @@ export default function Home() {
               </Heading>
             </M>
 
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-              <Text fontSize={{ base: "md", md: "lg" }} color="brand.inkSoft" fontFamily="body" maxW="560px" lineHeight="1.7">
-                Get tipped in SOL with real-time OBS alerts, animated notifications, a donor leaderboard, and your own custom creator page. Set up in 90 seconds.
+            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+              <Text fontSize={{ base: "md", md: "lg" }} color="brand.inkSoft" fontFamily="body" maxW="520px" lineHeight="1.7">
+                Get tipped in SOL with real-time OBS alerts, animated notifications, a donor leaderboard, and your own creator page. Set up in 90 seconds.
               </Text>
             </M>
 
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
               <HStack gap={3} flexWrap="wrap" justifyContent="center" mt={2}>
                 <button className="premium-btn primary" onClick={() => router.push("/register")}>
                   Start Getting Tipped →
@@ -108,8 +100,8 @@ export default function Home() {
               </HStack>
             </M>
 
-            <M initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }}>
-              <HStack gap={6} mt={4} flexWrap="wrap" justifyContent="center">
+            <M initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }}>
+              <HStack gap={8} mt={6} flexWrap="wrap" justifyContent="center">
                 {[
                   { val: "Sub-second", label: "finality" },
                   { val: "<$0.001", label: "per tx" },
@@ -128,8 +120,7 @@ export default function Home() {
 
       {/* ═══ FEATURES ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
-        <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">FEATURES</Text>
+        <VStack gap={3} mb={10} textAlign="center">
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
             Everything a streamer needs
           </Heading>
@@ -140,7 +131,7 @@ export default function Home() {
 
         <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", lg: "repeat(4, 1fr)" }} gap={4}>
           {FEATURES.map((f, i) => (
-            <M key={f.title} className="gradient-border-card" p={5} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.04 * i }}>
+            <M key={f.title} className="glass-card" p={5} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.03 * i }}>
               <Text fontSize="2xl" mb={3}>{f.icon}</Text>
               <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink" mb={1}>{f.title}</Text>
               <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" lineHeight="1.6">{f.desc}</Text>
@@ -151,8 +142,7 @@ export default function Home() {
 
       {/* ═══ HOW IT WORKS ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
-        <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">HOW IT WORKS</Text>
+        <VStack gap={3} mb={10} textAlign="center">
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
             Go live in three steps
           </Heading>
@@ -161,10 +151,10 @@ export default function Home() {
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={6}>
           {[
             { num: "01", title: "Create your page", desc: "Claim your @handle, connect your Solana wallet, write your bio. Takes 90 seconds.", icon: "📓" },
-            { num: "02", title: "Wire up OBS", desc: "Paste a single browser source URL. Tips show up on stream with sound alerts and animations.", icon: "🖥️" },
-            { num: "03", title: "Get tipped in SOL", desc: "Viewers send SOL with a message. Money lands in your wallet instantly. That's it.", icon: "◎" },
+            { num: "02", title: "Wire up OBS", desc: "Paste a single browser source URL. Tips show up on stream with sound alerts.", icon: "🖥️" },
+            { num: "03", title: "Get tipped in SOL", desc: "Viewers send SOL with a message. Money lands in your wallet instantly.", icon: "◎" },
           ].map((step, i) => (
-            <M key={step.num} className="glass-card" p={6} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 * i }}>
+            <M key={step.num} className="glass-card" p={6} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
               <HStack justifyContent="space-between" mb={4}>
                 <Text fontFamily="heading" fontSize="3xl" fontWeight="700" className="gradient-text">{step.num}</Text>
                 <Text fontSize="2xl">{step.icon}</Text>
@@ -179,18 +169,15 @@ export default function Home() {
       {/* ═══ STREAMERS ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
         <HStack justifyContent="space-between" alignItems="baseline" mb={8} flexWrap="wrap" gap={4}>
-          <Box>
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>CREATORS</Text>
-            <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">People on PuffTip</Heading>
-          </Box>
+          <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">People on PuffTip</Heading>
           <Link href="/explore" style={{ textDecoration: "none" }}>
-            <Text fontFamily="body" fontSize="sm" color="brand.solana" fontWeight="600">see all →</Text>
+            <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" fontWeight="500" _hover={{ color: "brand.ink" }}>see all →</Text>
           </Link>
         </HStack>
 
         <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", lg: "repeat(3, 1fr)" }} gap={4}>
           {STREAMERS.map((s, i) => (
-            <M key={s.handle} className="streamer-card" p={5} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 * i }} onClick={() => router.push(`/u/${s.handle}`)}>
+            <M key={s.handle} className="streamer-card" p={5} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.04 * i }} onClick={() => router.push(`/u/${s.handle}`)}>
               <HStack gap={3} mb={3}>
                 <Box w={11} h={11} borderRadius="full" bg="brand.paperDeep" display="flex" alignItems="center" justifyContent="center" fontSize="xl" border="1.5px solid" borderColor="var(--theme-card-border)" flexShrink={0}>{s.emoji}</Box>
                 <Box flex={1} minW={0}>
@@ -216,7 +203,6 @@ export default function Home() {
         <Container maxW="container.lg">
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={10} alignItems="center">
             <Box>
-              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>WHY SOLANA</Text>
               <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
                 Built for speed,{" "}
                 <Box as="span" className="gradient-text">built for creators</Box>
@@ -232,7 +218,7 @@ export default function Home() {
                 { val: "95%", label: "Goes to creator" },
                 { val: "0", label: "Holding period" },
               ].map((stat, i) => (
-                <M key={stat.label} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
+                <M key={stat.label} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35, delay: 0.06 * i }}>
                   <Text fontFamily="heading" fontSize="2xl" fontWeight="700" className="gradient-text">{stat.val}</Text>
                   <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" mt={1}>{stat.label}</Text>
                 </M>
@@ -242,34 +228,9 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* ═══ SEE IT IN ACTION ═══ */}
-      <Container maxW="container.lg" py="var(--section-py)">
-        <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">SEE IT IN ACTION</Text>
-          <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-            Built for{" "}
-            <Box as="span" className="gradient-text">every creator</Box>
-          </Heading>
-        </VStack>
-        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4}>
-          {[
-            { icon: "🖥️", title: "For Streamers", desc: "OBS overlay, 4 notification modes, sound alerts, and real-time tip delivery.", href: "/for-streamers" },
-            { icon: "🎨", title: "For Creators", desc: "Custom tip page, donor leaderboard, tip wall, dual themes, and instant payments.", href: "/for-creators" },
-            { icon: "🎮", title: "Live Demos", desc: "Interactive previews of every feature — notifications, sounds, themes, and more.", href: "/demos" },
-          ].map((card, i) => (
-            <M key={card.title} className="gradient-border-card" p={6} cursor="pointer" onClick={() => router.push(card.href)} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
-              <Text fontSize="2xl" mb={3}>{card.icon}</Text>
-              <Text fontFamily="heading" fontSize="lg" fontWeight="700" color="brand.ink" mb={2}>{card.title}</Text>
-              <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" lineHeight="1.6" mb={3}>{card.desc}</Text>
-              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="600">Learn more →</Text>
-            </M>
-          ))}
-        </Grid>
-      </Container>
-
       {/* ═══ CTA ═══ */}
       <Container maxW="container.md" py="var(--section-py)" textAlign="center">
-        <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <M initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
             Start getting tipped{" "}
             <Box as="span" className="gradient-text">tonight</Box>
@@ -291,9 +252,8 @@ export default function Home() {
       {/* ═══ STATS ═══ */}
       {stats && (
         <Container maxW="container.lg" py="var(--section-py)">
-          <VStack gap={2} mb={8} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">PLATFORM</Text>
-            <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">Stats on PuffTip</Heading>
+          <VStack gap={3} mb={8} textAlign="center">
+            <Heading as="h2" fontSize={{ base: "2xl", md: "3xl" }} fontFamily="heading" color="brand.ink">Platform Stats</Heading>
           </VStack>
           <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={4}>
             {[
@@ -305,7 +265,7 @@ export default function Home() {
               { label: "Premium", value: stats.premiumUsersCount.toLocaleString() },
             ].map((s, i) => (
               <GridItem key={s.label}>
-                <M className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.05 * i }}>
+                <M className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35, delay: 0.04 * i }}>
                   <Text fontFamily="heading" fontSize="3xl" fontWeight="700" color="brand.ink">{s.value}</Text>
                   <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" letterSpacing="wider" mt={1}>{s.label}</Text>
                 </M>

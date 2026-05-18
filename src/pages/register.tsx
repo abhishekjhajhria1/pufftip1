@@ -28,6 +28,7 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import { FiCheck, FiUser, FiEdit3 } from "react-icons/fi";
 import { setStoredCreator } from "@/lib/creatorStorage";
+import type { TipCardStyle } from "@/lib/creatorStorage";
 
 const MotionBox = motion(Box);
 
@@ -76,7 +77,18 @@ export default function Register() {
     username: "",
     displayName: "",
     bio: "",
+    accentColor: "#9945FF",
+    tipCardStyle: "sticky-note" as TipCardStyle,
   });
+
+  const ACCENT_COLORS = [
+    { name: "Solana", color: "#9945FF" },
+    { name: "Ocean", color: "#0EA5E9" },
+    { name: "Sunset", color: "#F97316" },
+    { name: "Forest", color: "#22C55E" },
+    { name: "Rose", color: "#F43F5E" },
+    { name: "Gold", color: "#EAB308" },
+  ];
 
   // Determine current step
   const currentStep = !connected ? 1 : success ? 3 : 2;
@@ -111,6 +123,8 @@ export default function Register() {
         displayName: formData.displayName || username,
         bio: formData.bio,
         walletAddress: publicKey.toString(),
+        accentColor: formData.accentColor,
+        tipCardStyle: formData.tipCardStyle,
       };
 
       setStoredCreator(creatorData);
@@ -263,6 +277,63 @@ export default function Register() {
                     rows={3}
                     disabled={loading}
                   />
+                </Box>
+
+                {/* Accent Color */}
+                <Box>
+                  <Text mb={2} fontWeight="600" fontSize="sm" color="brand.ink" fontFamily="body">
+                    Accent Color
+                  </Text>
+                  <HStack gap={3} flexWrap="wrap">
+                    {ACCENT_COLORS.map(c => (
+                      <Box
+                        key={c.name}
+                        w={8} h={8}
+                        borderRadius="full"
+                        bg={c.color}
+                        cursor="pointer"
+                        border={formData.accentColor === c.color ? "3px solid var(--theme-text)" : "2px solid var(--theme-card-border)"}
+                        transform={formData.accentColor === c.color ? "scale(1.15)" : "none"}
+                        transition="all 0.2s"
+                        onClick={() => setFormData({ ...formData, accentColor: c.color })}
+                        title={c.name}
+                      />
+                    ))}
+                  </HStack>
+                  <Text fontSize="xs" color="brand.inkSoft" mt={1} fontFamily="body">
+                    This colors your tip page accents
+                  </Text>
+                </Box>
+
+                {/* Tip Card Style */}
+                <Box>
+                  <Text mb={2} fontWeight="600" fontSize="sm" color="brand.ink" fontFamily="body">
+                    Tip Card Style
+                  </Text>
+                  <HStack gap={2} flexWrap="wrap">
+                    {[
+                      { id: "sticky-note" as TipCardStyle, label: "📌 Sticky Notes", desc: "Colorful rotated notes" },
+                      { id: "clean" as TipCardStyle, label: "✨ Clean Cards", desc: "Flat modern cards" },
+                      { id: "minimal" as TipCardStyle, label: "✎ Minimal", desc: "Text-only list" },
+                    ].map(style => (
+                      <Box
+                        key={style.id}
+                        flex={1}
+                        minW="120px"
+                        bg={formData.tipCardStyle === style.id ? "brand.paperDeep" : "transparent"}
+                        border={formData.tipCardStyle === style.id ? "2px solid var(--theme-text)" : "1.5px solid var(--theme-card-border)"}
+                        borderRadius="md"
+                        p={3}
+                        cursor="pointer"
+                        transition="all 0.2s"
+                        onClick={() => setFormData({ ...formData, tipCardStyle: style.id })}
+                        textAlign="center"
+                      >
+                        <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink">{style.label}</Text>
+                        <Text fontFamily="body" fontSize="2xs" color="brand.inkSoft">{style.desc}</Text>
+                      </Box>
+                    ))}
+                  </HStack>
                 </Box>
 
                 {/* Submit */}

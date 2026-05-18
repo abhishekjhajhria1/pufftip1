@@ -119,11 +119,8 @@ export default function DashboardPage() {
             <Box position="absolute" top="-10px" left="20px" transform="rotate(calc(var(--theme-rot-3) * 1.5))" w="4rem" className="washi bg-washi-pink" />
             <HStack justifyContent="space-between" flexWrap="wrap" gap={4} mt={2}>
               <Box>
-                <Text fontSize="xs" color="brand.solana" mb={1} textTransform="uppercase" letterSpacing="wider" fontWeight="700" fontFamily="body">
-                  Creator Dashboard
-                </Text>
                 <Heading size="2xl" color="brand.ink" fontFamily="heading">
-                  {creator?.displayName || "Your Dashboard"}
+                  {creator?.displayName || "your dashboard"}
                 </Heading>
                 <Text color="brand.inkSoft" mt={1} fontSize="sm">
                   {creator?.bio || "Manage your PuffTip profile and track activity."}

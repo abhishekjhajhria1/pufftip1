@@ -67,9 +67,7 @@ export default function ForCreatorsPage() {
 
         <Container maxW="container.lg" py={{ base: "4rem", md: "7rem" }} position="relative" zIndex={2}>
           <VStack gap={6} textAlign="center" maxW="700px" mx="auto">
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <Box className="solana-badge">🎨 FOR ALL CREATORS</Box>
-            </M>
+
 
             <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
               <Heading as="h1" fontSize={{ base: "3xl", sm: "5xl", lg: "6xl" }} fontFamily="heading" lineHeight="1.08" color="brand.ink">
@@ -116,10 +114,8 @@ export default function ForCreatorsPage() {
       {/* ═══ THEME SHOWCASE ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">YOUR AESTHETIC</Text>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-            Two themes,{" "}
-            <Box as="span" className="gradient-text">one you</Box>
+            two themes, <Box as="span" className="gradient-text">one you</Box>
           </Heading>
           <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="500px">
             Notebook for the warm, handcrafted feel. Studio for the sleek, modern dark mode. Switch anytime.
@@ -185,13 +181,11 @@ export default function ForCreatorsPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.lg">
           <VStack gap={2} mb={10} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">TIP WALL</Text>
             <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-              Every tip becomes a{" "}
-              <Box as="span" className="gradient-text">sticky note</Box>
+              every tip becomes a <Box as="span" className="gradient-text">sticky note</Box>
             </Heading>
             <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="500px">
-              Supporters leave messages that stick to your page. It&apos;s a living, breathing wall of gratitude.
+              supporters leave messages that stick to your page. it&apos;s a living, breathing wall of gratitude.
             </Text>
           </VStack>
 
@@ -223,10 +217,9 @@ export default function ForCreatorsPage() {
       <Container maxW="container.lg" py="var(--section-py)">
         <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={10} alignItems="center">
           <Box>
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>LEADERBOARD</Text>
+
             <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
-              Give your fans{" "}
-              <Box as="span" className="gradient-text">recognition</Box>
+              give your fans <Box as="span" className="gradient-text">recognition</Box>
             </Heading>
             <Text fontFamily="body" fontSize="md" color="brand.inkSoft" lineHeight="1.7" mb={4}>
               Top supporters are ranked by total tips. The leaderboard updates in real-time. Your biggest fans see their name at the top — and they love it.
@@ -269,16 +262,14 @@ export default function ForCreatorsPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.lg">
           <VStack gap={2} mb={10} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">CUSTOMIZATION</Text>
             <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-              Your page,{" "}
-              <Box as="span" className="gradient-text">your choices</Box>
+              your page, <Box as="span" className="gradient-text">your choices</Box>
             </Heading>
           </VStack>
 
           <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", md: "repeat(4, 1fr)" }} gap={4}>
             {CUSTOMIZATION_OPTIONS.map((opt, i) => (
-              <M key={opt.title} className="gradient-border-card" p={5} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.04 * i }}>
+              <M key={opt.title} className="glass-card" p={5} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.03 * i }}>
                 <Text fontSize="2xl" mb={3}>{opt.icon}</Text>
                 <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink" mb={1}>{opt.title}</Text>
                 <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" lineHeight="1.6">{opt.desc}</Text>
@@ -311,7 +302,7 @@ export default function ForCreatorsPage() {
           </M>
 
           <Box>
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>YOUR TIP PAGE</Text>
+
             <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
               More than a{" "}
               <Box as="span" className="gradient-text">link-in-bio</Box>

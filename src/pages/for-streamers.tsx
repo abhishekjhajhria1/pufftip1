@@ -100,9 +100,7 @@ export default function ForStreamersPage() {
 
         <Container maxW="container.lg" py={{ base: "4rem", md: "7rem" }} position="relative" zIndex={2}>
           <VStack gap={6} textAlign="center" maxW="700px" mx="auto">
-            <M initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <Box className="solana-badge">🖥️ BUILT FOR STREAMERS</Box>
-            </M>
+
 
             <M initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
               <Heading as="h1" fontSize={{ base: "3xl", sm: "5xl", lg: "6xl" }} fontFamily="heading" lineHeight="1.08" color="brand.ink">
@@ -135,13 +133,11 @@ export default function ForStreamersPage() {
       {/* ═══ NOTIFICATION MODES ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">NOTIFICATION MODES</Text>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-            Pick how tips{" "}
-            <Box as="span" className="gradient-text">appear on stream</Box>
+            pick how tips <Box as="span" className="gradient-text">appear on stream</Box>
           </Heading>
           <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="500px">
-            Choose from 4 display modes. Mix and match. Switch anytime from your notification settings.
+            choose from 4 display modes. mix and match. switch anytime from your notification settings.
           </Text>
         </VStack>
 
@@ -243,13 +239,11 @@ export default function ForStreamersPage() {
       <Box className="cta-section" py="var(--section-py)">
         <Container maxW="container.lg">
           <VStack gap={2} mb={10} textAlign="center">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">CONTENT STYLES</Text>
             <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-              Choose the{" "}
-              <Box as="span" className="gradient-text">vibe</Box>
+              choose the <Box as="span" className="gradient-text">vibe</Box>
             </Heading>
             <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="500px">
-              From minimal text to particle explosions. Every tip can look exactly how you want.
+              from minimal text to particle explosions. every tip can look exactly how you want.
             </Text>
           </VStack>
 
@@ -275,13 +269,11 @@ export default function ForStreamersPage() {
       {/* ═══ SOUND ALERTS ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">SOUND ALERTS</Text>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-            5 built-in sounds,{" "}
-            <Box as="span" className="gradient-text">zero setup</Box>
+            5 built-in sounds, <Box as="span" className="gradient-text">zero setup</Box>
           </Heading>
           <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="500px">
-            Tap to preview. Adjust volume, mute, or swap sounds from your notification settings anytime.
+            tap to preview. adjust volume, mute, or swap sounds from your notification settings anytime.
           </Text>
         </VStack>
 
@@ -311,7 +303,7 @@ export default function ForStreamersPage() {
         <Container maxW="container.lg">
           <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={10} alignItems="center">
             <Box>
-              <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={2}>OBS INTEGRATION</Text>
+
               <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink" mb={4}>
                 One URL.{" "}
                 <Box as="span" className="gradient-text">That&apos;s it.</Box>
@@ -371,10 +363,8 @@ export default function ForStreamersPage() {
       {/* ═══ FEE COMPARISON ═══ */}
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={10} textAlign="center">
-          <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">FEES</Text>
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-            95% of every tip goes{" "}
-            <Box as="span" className="gradient-text">straight to you</Box>
+            95% of every tip goes <Box as="span" className="gradient-text">straight to you</Box>
           </Heading>
         </VStack>
 
@@ -384,7 +374,7 @@ export default function ForStreamersPage() {
             { platform: "ETH-based tips", fee: "0%", speed: "~15 seconds", cost: "$2-50+ gas" },
             { platform: "PuffTip (Solana)", fee: "5%", speed: "<1 second", cost: "<$0.001", highlight: true },
           ].map((p, i) => (
-            <M key={p.platform} className={p.highlight ? "gradient-border-card" : "glass-card"} p={5} textAlign="center" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
+            <M key={p.platform} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 * i }}>
               <Text fontFamily="heading" fontSize="sm" fontWeight="700" color={p.highlight ? "brand.solana" : "brand.ink"} mb={4}>{p.platform}</Text>
               <VStack gap={3}>
                 <Box>

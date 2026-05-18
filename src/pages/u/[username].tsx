@@ -36,6 +36,8 @@ import { DonorLeaderboard } from "@/components/DonorLeaderboard";
 import { useWebSocketTips } from "@/hooks/useWebSocketTips";
 import { NotificationManager } from "@/components/NotificationManager";
 import { NotificationSettings } from "@/components/NotificationSettings";
+import { getStoredCreator } from "@/lib/creatorStorage";
+import type { TipCardStyle } from "@/lib/creatorStorage";
 
 const MotionBox = motion(Box);
 
@@ -85,6 +87,10 @@ export default function UserPublicPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Creator customization
+  const [accentColor, setAccentColor] = useState("#9945FF");
+  const [tipCardStyle, setTipCardStyle] = useState<TipCardStyle>("sticky-note");
+
   // Real-time WebSocket integration
   const { isConnected } = useWebSocketTips(
     typeof username === "string" ? username : ""
@@ -121,6 +127,15 @@ export default function UserPublicPage() {
     };
 
     fetchData();
+  }, [username]);
+
+  // Load creator customization preferences
+  useEffect(() => {
+    const stored = getStoredCreator();
+    if (stored && stored.username === username) {
+      if (stored.accentColor) setAccentColor(stored.accentColor);
+      if (stored.tipCardStyle) setTipCardStyle(stored.tipCardStyle);
+    }
   }, [username]);
 
   /** Refresh tips + leaderboard after successful tip */
@@ -209,7 +224,7 @@ export default function UserPublicPage() {
       {/* Notification System (invisible orchestrator) */}
       <NotificationManager creatorId={typeof username === "string" ? username : ""} />
 
-      <Container maxW="container.lg" py={{ base: 6, md: 12 }}>
+      <Container maxW="container.lg" py={{ base: 6, md: 12 }} style={{ "--creator-accent": accentColor } as React.CSSProperties}>
         <Grid templateColumns={{ base: "1fr", lg: "1fr 380px" }} gap={8}>
           {/* ── Left Column: Profile + Tips Feed ── */}
           <GridItem>
@@ -327,41 +342,94 @@ export default function UserPublicPage() {
                     {tips.map((tip, i) => {
                       const colorClass = i % 3 === 0 ? "pink" : i % 3 === 1 ? "cyan" : "";
                       const rotation = i % 2 === 0 ? "rotate(1.5deg)" : "rotate(-1.5deg)";
+
+                      // Sticky-note style (default)
+                      if (tipCardStyle === "sticky-note") {
+                        return (
+                          <MotionBox
+                            key={tip.id}
+                            className={`sticky-note ${colorClass}`}
+                            style={{ transform: rotation }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.3, delay: 0.05 * i }}
+                          >
+                            <Box position="absolute" top="-2" left="50%" transform="translateX(-50%)" w={3} h={3} bg="brand.markerRed" borderRadius="full" boxShadow="sm" border="1px solid var(--theme-card-border)" />
+                            <HStack justifyContent="space-between" mb={2}>
+                              <Text fontWeight="bold" color="brand.inkSoft" fontSize="xs" fontFamily="body">
+                                @{tip.donorName || "anonymous"}
+                              </Text>
+                              <Badge bg="transparent" color="brand.ink" border="1px solid" borderColor="brand.ink" borderRadius="full" px={2} fontSize="xs" fontFamily="body">
+                                ◎ {Number(tip.amount).toFixed(2)}
+                              </Badge>
+                            </HStack>
+                            {tip.message && (
+                              <Text color="brand.ink" fontSize="lg" mb={2} fontFamily="heading" lineHeight="1.3">
+                                {tip.message}
+                              </Text>
+                            )}
+                            <Text fontSize="2xs" color="brand.inkSoft" fontFamily="body">
+                              {new Date(tip.createdAt).toLocaleDateString()}
+                            </Text>
+                          </MotionBox>
+                        );
+                      }
+
+                      // Clean card style
+                      if (tipCardStyle === "clean") {
+                        return (
+                          <MotionBox
+                            key={tip.id}
+                            className="glass-card"
+                            p={4}
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.04 * i }}
+                          >
+                            <HStack justifyContent="space-between" mb={2}>
+                              <Text fontWeight="700" color="brand.ink" fontSize="sm" fontFamily="heading">
+                                @{tip.donorName || "anonymous"}
+                              </Text>
+                              <Text fontFamily="heading" fontSize="sm" fontWeight="700" style={{ color: accentColor }}>
+                                ◎ {Number(tip.amount).toFixed(2)}
+                              </Text>
+                            </HStack>
+                            {tip.message && (
+                              <Text color="brand.inkSoft" fontSize="sm" fontFamily="body" lineHeight="1.5" mb={2}>
+                                {tip.message}
+                              </Text>
+                            )}
+                            <Text fontSize="2xs" color="brand.inkSoft" fontFamily="body">
+                              {new Date(tip.createdAt).toLocaleDateString()}
+                            </Text>
+                          </MotionBox>
+                        );
+                      }
+
+                      // Minimal text-only style
                       return (
                         <MotionBox
                           key={tip.id}
-                          className={`sticky-note ${colorClass}`}
-                          style={{ transform: rotation }}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.3, delay: 0.05 * i }}
+                          py={3}
+                          borderBottom="1px solid"
+                          borderColor="var(--theme-card-border)"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2, delay: 0.03 * i }}
                         >
-                          <Box position="absolute" top="-2" left="50%" transform="translateX(-50%)" w={3} h={3} bg="brand.markerRed" borderRadius="full" boxShadow="sm" border="1px solid var(--theme-card-border)" />
-                          <HStack justifyContent="space-between" mb={2}>
-                            <Text fontWeight="bold" color="brand.inkSoft" fontSize="xs" fontFamily="body">
+                          <HStack justifyContent="space-between" mb={1}>
+                            <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" fontWeight="600">
                               @{tip.donorName || "anonymous"}
                             </Text>
-                            <Badge
-                              bg="transparent"
-                              color="brand.ink"
-                              border="1px solid"
-                              borderColor="brand.ink"
-                              borderRadius="full"
-                              px={2}
-                              fontSize="xs"
-                              fontFamily="body"
-                            >
+                            <Text fontFamily="heading" fontSize="xs" fontWeight="700" style={{ color: accentColor }}>
                               ◎ {Number(tip.amount).toFixed(2)}
-                            </Badge>
+                            </Text>
                           </HStack>
                           {tip.message && (
-                            <Text color="brand.ink" fontSize="lg" mb={2} fontFamily="heading" lineHeight="1.3">
+                            <Text color="brand.ink" fontSize="sm" fontFamily="body" lineHeight="1.4">
                               {tip.message}
                             </Text>
                           )}
-                          <Text fontSize="2xs" color="brand.inkSoft" fontFamily="body">
-                            {new Date(tip.createdAt).toLocaleDateString()}
-                          </Text>
                         </MotionBox>
                       );
                     })}

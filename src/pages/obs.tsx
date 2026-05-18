@@ -31,7 +31,6 @@ export default function OBSPage() {
         <VStack gap={10} align="stretch">
           {/* Header */}
           <VStack gap={2} textAlign="center" maxW="600px" mx="auto">
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase">OBS SETUP</Text>
             <Heading as="h1" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
               Tip alerts on stream in{" "}
               <Box as="span" className="gradient-text">2 minutes</Box>
@@ -99,7 +98,7 @@ export default function OBSPage() {
 
           {/* Features Grid */}
           <Box>
-            <Text fontFamily="body" fontSize="xs" color="brand.solana" fontWeight="700" letterSpacing="widest" textTransform="uppercase" mb={4} textAlign="center">OVERLAY FEATURES</Text>
+            <Heading as="h2" fontSize={{ base: "xl", md: "2xl" }} fontFamily="heading" color="brand.ink" mb={4} textAlign="center">Overlay features</Heading>
             <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", md: "repeat(4, 1fr)" }} gap={4}>
               {[
                 { icon: "⚡", title: "Real-time", desc: "WebSocket powered — zero delay" },
@@ -107,7 +106,7 @@ export default function OBSPage() {
                 { icon: "🎨", title: "Animated", desc: "Smooth entry/exit animations" },
                 { icon: "💬", title: "Messages", desc: "Shows donor name, amount & note" },
               ].map((f, i) => (
-                <M key={f.title} className="gradient-border-card" p={4} textAlign="center" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.06 * i }}>
+                <M key={f.title} className="glass-card" p={4} textAlign="center" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.05 * i }}>
                   <Text fontSize="xl" mb={2}>{f.icon}</Text>
                   <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink" mb={1}>{f.title}</Text>
                   <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">{f.desc}</Text>
