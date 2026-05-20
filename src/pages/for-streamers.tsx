@@ -364,7 +364,7 @@ export default function ForStreamersPage() {
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={2} mb={10} textAlign="center">
           <Heading as="h2" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-            95% of every tip goes <Box as="span" className="gradient-text">straight to you</Box>
+            98% of every tip goes <Box as="span" className="gradient-text">straight to you</Box>
           </Heading>
         </VStack>
 
@@ -372,7 +372,7 @@ export default function ForStreamersPage() {
           {[
             { platform: "Traditional Platforms", fee: "30-50%", speed: "7-30 days", cost: "$0.30+ per tx" },
             { platform: "ETH-based tips", fee: "0%", speed: "~15 seconds", cost: "$2-50+ gas" },
-            { platform: "PuffTip (Solana)", fee: "5%", speed: "<1 second", cost: "<$0.001", highlight: true },
+            { platform: "PuffTip (Solana)", fee: "2%", speed: "<1 second", cost: "<$0.001", highlight: true },
           ].map((p, i) => (
             <M key={p.platform} className="glass-card" p={5} textAlign="center" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 * i }}>
               <Text fontFamily="heading" fontSize="sm" fontWeight="700" color={p.highlight ? "brand.solana" : "brand.ink"} mb={4}>{p.platform}</Text>

@@ -194,7 +194,7 @@ export async function getDonorLeaderboard(username: string, limit = 5) {
  * 1. Validate tip amount (must be positive finite number)
  * 2. Verify recipient exists in database
  * 3. Validate message length (max 500 chars)
- * 4. Calculate splits: 95% to creator, 5% platform fee
+ * 4. Calculate splits: 98% to creator, 2% platform fee
  * 5. Create placeholder tip record (actual tx submitted by frontend)
  *
  * Parameters:
@@ -230,8 +230,8 @@ export async function createTip(
   }
 
   const amountLamports = Math.floor(amountSol * 1_000_000_000);
-  const platformFee = Math.floor(amountLamports / 20); // 5%
-  const creatorAmount = amountLamports - platformFee; // 95%
+  const platformFee = Math.floor(amountLamports / 50); // 2%
+  const creatorAmount = amountLamports - platformFee; // 98%
 
   return await prisma.tip.create({
     data: {

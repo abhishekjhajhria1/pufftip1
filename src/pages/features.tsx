@@ -12,7 +12,7 @@ const M = motion(Box);
 
 const FEATURES = [
   { num: "01", icon: "🖥️", title: "OBS Overlay", desc: "One browser source URL. Tips appear on stream as animated notifications in real-time. No plugins, no extensions.", detail: "Paste a single URL into OBS Studio as a Browser Source. Set width to 800, height to 600. Tips show up automatically with smooth entry/exit animations. Works with any streaming software that supports browser sources." },
-  { num: "02", icon: "⚡", title: "Instant SOL Payments", desc: "Tips hit your wallet in under a second. No holding periods, no minimum payout, no middlemen.", detail: "Every tip is a direct Solana transaction. The SOL goes straight to your wallet — not to our platform first. We take a 5% fee at the transaction level, and you receive 95% immediately. No waiting days or weeks." },
+  { num: "02", icon: "⚡", title: "Instant SOL Payments", desc: "Tips hit your wallet in under a second. No holding periods, no minimum payout, no middlemen.", detail: "Every tip is a direct Solana transaction. The SOL goes straight to your wallet — not to our platform first. We take a 2% fee at the transaction level, and you receive 98% immediately. No waiting days or weeks." },
   { num: "03", icon: "🌐", title: "WebSocket Real-Time", desc: "Tips are pushed instantly via WebSocket. Your overlay stays perfectly in sync.", detail: "We use persistent WebSocket connections between your tip page, the OBS overlay, and our server. When a tip comes in, it's pushed to all connected clients simultaneously — zero polling, zero delay." },
   { num: "04", icon: "🔔", title: "4 Notification Modes", desc: "Toast, Modal, Banner, or Slide-in. Pick what fits your stream.", detail: "Toast: compact corner pop-up. Banner: full-width top alert. Slide-in: smooth right-edge entry. Modal: center-screen takeover for big tips. Mix and match, or let the system choose based on tip amount." },
   { num: "05", icon: "🎊", title: "5 Content Styles", desc: "Simple, Rich, Confetti, Coin, or All. Visual effects for every tip.", detail: "Simple: clean text notification. Rich: styled card with avatar and colors. Confetti: celebration particle burst. Coin: animated coin drop with sound. All: random rotation through all styles." },
@@ -112,7 +112,7 @@ export default function FeaturesPage() {
             All features. <Box as="span" className="gradient-text">Free.</Box>
           </Heading>
           <Text fontFamily="body" fontSize="md" color="brand.inkSoft" maxW="lg" mx="auto" mb={8}>
-            No premium tiers, no feature gates. Every creator gets everything. We only take 5% per tip.
+            No premium tiers, no feature gates. Every creator gets everything. We only take 2% per tip.
           </Text>
           <HStack gap={3} justifyContent="center" flexWrap="wrap">
             <button className="premium-btn primary" onClick={() => router.push("/register")}>Create Your Page →</button>

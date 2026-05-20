@@ -224,7 +224,7 @@ export function TipForm({ username, onSuccess, onError }: TipFormProps) {
             size="lg"
           />
           <Text fontSize="xs" color="brand.inkSoft" mt={1} fontFamily="body">
-            Between 0.01 and 1000 SOL • 95% goes to creator
+            Between 0.01 and 1000 SOL • 98% goes to creator
           </Text>
           {getFieldError("amount") && (
             <Text color="brand.markerRed" fontSize="xs" mt={1} fontWeight="bold">

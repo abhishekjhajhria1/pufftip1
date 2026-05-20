@@ -64,7 +64,7 @@ export default function AboutPage() {
               <Box as="span" className="gradient-text">instant, transparent, and fair</Box>
             </Heading>
             <Text fontFamily="body" fontSize="md" color="brand.inkSoft" lineHeight="1.7" mb={4}>
-              We believe creators should receive the money their supporters send — not platforms. PuffTip takes just 5%, settles every tip in under a second, and puts control in the creator&apos;s hands.
+              We believe creators should receive the money their supporters send — not platforms. PuffTip takes just 2%, settles every tip in under a second, and puts control in the creator&apos;s hands.
             </Text>
             <Text fontFamily="body" fontSize="md" color="brand.inkSoft" lineHeight="1.7">
               No signups to browse. No wallet lock-in. No mandatory features. Just a clean, powerful tipping experience built on the fastest blockchain in the world.
@@ -75,7 +75,7 @@ export default function AboutPage() {
             {[
               { icon: "⚡", title: "Instant", desc: "Sub-second settlement. No holding periods." },
               { icon: "🔍", title: "Transparent", desc: "Every transaction is on-chain and verifiable." },
-              { icon: "🤝", title: "Fair", desc: "95% to the creator. Always." },
+              { icon: "🤝", title: "Fair", desc: "98% to the creator. Always." },
               { icon: "🎨", title: "Customizable", desc: "Themes, notifications, sounds — your choice." },
             ].map((v, i) => (
               <M key={v.title} className="glass-card" p={5} w="full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>

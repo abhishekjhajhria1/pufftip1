@@ -8,7 +8,7 @@
  * 4. Leaderboard Demo — populated rankings
  * 5. Customization Grid — all creator choices
  * 6. Link-in-Bio — how PuffTip replaces link-in-bio tools
- * 7. Fee Strip — simple "95% to you"
+ * 7. Fee Strip — simple "98% to you"
  * 8. CTA
  */
 
@@ -96,7 +96,7 @@ export default function ForCreatorsPage() {
             <M initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }}>
               <HStack gap={6} mt={4} flexWrap="wrap" justifyContent="center">
                 {[
-                  { val: "95%", label: "goes to you" },
+                  { val: "98%", label: "goes to you" },
                   { val: "<1s", label: "to your wallet" },
                   { val: "Free", label: "to start" },
                 ].map(s => (

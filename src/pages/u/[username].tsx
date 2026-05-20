@@ -91,6 +91,12 @@ export default function UserPublicPage() {
   const [accentColor, setAccentColor] = useState("#9945FF");
   const [tipCardStyle, setTipCardStyle] = useState<TipCardStyle>("sticky-note");
 
+  const alsoOn = [
+    { emoji: "👻", name: "Ghost Roast", handle: "ghostroast" },
+    { emoji: "💻", name: "Late Shift", handle: "lateshift" },
+    { emoji: "🍜", name: "Miso Kitchen", handle: "misokitchen" },
+  ];
+
   // Real-time WebSocket integration
   const { isConnected } = useWebSocketTips(
     typeof username === "string" ? username : ""
@@ -229,6 +235,23 @@ export default function UserPublicPage() {
           {/* ── Left Column: Profile + Tips Feed ── */}
           <GridItem>
             <VStack gap={8} align="stretch">
+              {/* Viewing Banner */}
+              <Box className="paper-card" p={4}>
+                <HStack justifyContent="space-between" flexWrap="wrap" gap={3}>
+                  <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">
+                    viewing as a fan. tweak this page in the dashboard or claim it now.
+                  </Text>
+                  <HStack gap={2}>
+                    <button className="premium-btn secondary" style={{ padding: "6px 12px", fontSize: "12px" }} onClick={() => router.push("/dashboard")}>
+                      ✎ edit this page
+                    </button>
+                    <button className="premium-btn secondary" style={{ padding: "6px 12px", fontSize: "12px" }} onClick={() => router.push("/dashboard")}>
+                      dashboard →
+                    </button>
+                  </HStack>
+                </HStack>
+              </Box>
+
               {/* Profile Header */}
               <MotionBox
                 className="paper-card rotate-doodle-2"
@@ -268,6 +291,7 @@ export default function UserPublicPage() {
                   </Box>
 
                   <Box flex={1} pt={2}>
+                    <Text fontFamily="heading" fontSize="xs" color="brand.inkSoft" textTransform="uppercase" letterSpacing="1px">on air</Text>
                     <HStack gap={2} mb={1} flexWrap="wrap">
                       <Heading
                         as="h1"
@@ -335,7 +359,7 @@ export default function UserPublicPage() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <Heading as="h3" size="md" color="brand.ink" mb={6} fontFamily="heading">
-                  <span className="marker-highlight">tip wall ({tips.length})</span>
+                  <span className="marker-highlight">the tip wall ({tips.length})</span>
                 </Heading>
                 {tips.length > 0 ? (
                   <Grid templateColumns={{ base: "1fr", sm: "repeat(2, 1fr)" }} gap={4}>
@@ -456,9 +480,12 @@ export default function UserPublicPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <Heading as="h2" size="lg" color="brand.ink" mb={4} fontFamily="heading">
-                  send a tip
+                <Heading as="h2" size="lg" color="brand.ink" mb={2} fontFamily="heading">
+                  send a puff ✈️
                 </Heading>
+                <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" mb={4}>
+                  pre-set amounts. no fuss.
+                </Text>
 
                 {/* Success Message */}
                 {successMessage && (
@@ -513,9 +540,39 @@ export default function UserPublicPage() {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <Heading as="h3" size="md" color="brand.ink" mb={4} fontFamily="heading">
-                  🏆 top supporters
+                  top fans 🏆
                 </Heading>
                 <DonorLeaderboard entries={leaderboard} />
+              </MotionBox>
+
+              <MotionBox
+                className="paper-card"
+                p={{ base: 5, md: 6 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+              >
+                <Heading as="h3" size="md" color="brand.ink" mb={3} fontFamily="heading">
+                  also on pufftip
+                </Heading>
+                <VStack align="stretch" gap={2}>
+                  {alsoOn.map((entry) => (
+                    <Button
+                      key={entry.handle}
+                      variant="ghost"
+                      justifyContent="flex-start"
+                      onClick={() => router.push(`/u/${entry.handle}`)}
+                    >
+                      <HStack gap={3}>
+                        <Text fontSize="lg">{entry.emoji}</Text>
+                        <Box>
+                          <Text fontFamily="heading" fontSize="sm" color="brand.ink">{entry.name}</Text>
+                          <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">@{entry.handle}</Text>
+                        </Box>
+                      </HStack>
+                    </Button>
+                  ))}
+                </VStack>
               </MotionBox>
             </VStack>
           </GridItem>

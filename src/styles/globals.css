@@ -336,6 +336,148 @@ body {
 }
 .footer-link:hover { color: var(--theme-text); }
 
+/* ---------- Brand Header ---------- */
+.brand-logo { align-items: center; }
+.brand-badge {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--theme-marker-yellow); color: #1B1B1B;
+  font-family: var(--theme-font-heading); font-weight: 700; font-size: 1rem;
+  border: 2px solid var(--theme-card-border);
+  box-shadow: var(--theme-shadow-sticker);
+}
+[data-theme="studio"] .brand-badge {
+  background: var(--theme-solana-gradient);
+  color: white; border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 6px 18px rgba(153,69,255,0.2);
+}
+
+.demo-pill {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 4px 10px; border-radius: 10px; border: 1.5px solid var(--theme-card-border);
+  background: var(--theme-card-bg); min-width: 74px; line-height: 1;
+  box-shadow: var(--theme-shadow-card);
+}
+.demo-pill-amount { font-size: 12px; font-weight: 700; color: var(--theme-text); font-family: var(--theme-font-heading); }
+.demo-pill-label { font-size: 10px; color: var(--theme-text-soft); font-family: var(--theme-font-body); text-transform: uppercase; letter-spacing: 0.6px; }
+
+/* ---------- Ticker ---------- */
+.ticker {
+  position: relative; overflow: hidden; border: 1px solid var(--theme-card-border);
+  background: var(--theme-card-bg); border-radius: 999px; padding: 8px 0;
+  box-shadow: var(--theme-shadow-card);
+}
+.ticker-track {
+  display: flex; gap: 24px; white-space: nowrap; animation: ticker-move 18s linear infinite;
+}
+.ticker-item { font-family: var(--theme-font-body); font-size: 12px; color: var(--theme-text-soft); }
+@keyframes ticker-move {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---------- Hero / Cards ---------- */
+.hero-card {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-card-border);
+  border-radius: var(--theme-radius-card);
+  box-shadow: var(--theme-shadow-card);
+}
+.hero-card .mini-stat { font-family: var(--theme-font-body); font-size: 11px; color: var(--theme-text-soft); }
+.hero-card .mini-stat strong { color: var(--theme-text); font-family: var(--theme-font-heading); }
+
+/* ---------- Corkboard / Explore ---------- */
+.corkboard-filter {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.corkboard-filter button {
+  border: 1.5px solid var(--theme-card-border);
+  background: var(--theme-card-bg);
+  color: var(--theme-text-soft);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px;
+  font-family: var(--theme-font-heading); cursor: pointer;
+  transition: all 0.2s ease;
+}
+.corkboard-filter button.active,
+.corkboard-filter button:hover { color: var(--theme-text); border-color: var(--theme-text); }
+
+/* ---------- Receipt ---------- */
+.receipt-card {
+  background: var(--theme-card-bg);
+  border: 1.5px solid var(--theme-card-border);
+  border-radius: var(--theme-radius-card);
+  box-shadow: var(--theme-shadow-card);
+  padding: 24px;
+  position: relative;
+}
+.receipt-title {
+  font-family: var(--theme-font-heading); font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--theme-text-soft);
+}
+.receipt-list { list-style: none; margin-top: 16px; }
+.receipt-list li {
+  display: flex; justify-content: space-between; font-family: var(--theme-font-body);
+  font-size: 13px; color: var(--theme-text); padding: 6px 0;
+  border-bottom: 1px dashed var(--theme-card-border);
+}
+.receipt-total { font-family: var(--theme-font-heading); font-size: 16px; }
+
+/* ---------- OBS Zine ---------- */
+.zine-card {
+  background: var(--theme-card-bg);
+  border: 1.5px solid var(--theme-card-border);
+  border-radius: var(--theme-radius-card);
+  box-shadow: var(--theme-shadow-card);
+  padding: 20px;
+}
+.zine-step {
+  display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+  padding: 16px; border: 1px dashed var(--theme-card-border); border-radius: 12px;
+  background: var(--theme-bg-deep);
+}
+.zine-number {
+  width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  background: var(--theme-marker-yellow); font-family: var(--theme-font-heading); font-weight: 700;
+  border: 1px solid var(--theme-card-border);
+}
+[data-theme="studio"] .zine-number { background: var(--theme-solana-gradient); color: white; }
+
+/* ---------- Dashboard Cards ---------- */
+.metric-card {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-card-border);
+  border-radius: var(--theme-radius-card);
+  padding: 16px;
+  box-shadow: var(--theme-shadow-card);
+}
+.metric-label { font-size: 11px; color: var(--theme-text-soft); font-family: var(--theme-font-body); text-transform: uppercase; letter-spacing: 1px; }
+.metric-value { font-family: var(--theme-font-heading); font-size: 20px; color: var(--theme-text); }
+
+/* ---------- Floating Hint + Mascot ---------- */
+.corner-hint {
+  position: fixed; bottom: 22px; left: 22px; z-index: 50;
+  background: var(--theme-card-bg); border: 1px solid var(--theme-card-border);
+  border-radius: 14px; padding: 12px 14px; box-shadow: var(--theme-shadow-card);
+  font-family: var(--theme-font-body); font-size: 12px; color: var(--theme-text-soft);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.corner-hint-btn {
+  border: 1px solid var(--theme-card-border); background: transparent; color: var(--theme-text);
+  border-radius: 999px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+  font-family: var(--theme-font-heading);
+}
+.corner-hint-btn:hover { border-color: var(--theme-text); }
+
+.mascot-btn {
+  position: fixed; right: 22px; bottom: 22px; z-index: 50;
+  width: 56px; height: 56px; border-radius: 50%;
+  border: 1.5px solid var(--theme-card-border); background: var(--theme-card-bg);
+  box-shadow: var(--theme-shadow-card); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px; font-size: 16px;
+  cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mascot-btn:hover { transform: translateY(-2px); box-shadow: var(--theme-shadow-hover); }
+
 /* ---------- Glow Orbs ---------- */
 .glow-orb {
   position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;

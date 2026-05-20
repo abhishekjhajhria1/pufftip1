@@ -1,24 +1,16 @@
 /**
- * OBS Setup Guide — Premium
+ * OBS Setup Guide — Hand-Drawn Zine
  */
 
-import { Box, VStack, Heading, Text, Container, Grid, HStack, Button } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, VStack, Heading, Text, Container, HStack } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { FiCopy, FiCheck, FiMonitor, FiZap, FiBell, FiSettings } from "react-icons/fi";
+import { FiCopy } from "react-icons/fi";
 
 const M = motion(Box);
 
 export default function OBSPage() {
-  const [copied, setCopied] = useState(false);
-  const sampleUrl = "https://pufftip.com/embed/yourusername";
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(sampleUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const sampleUrl = "https://pufftip.com/overlay/@yourhandle?key=•••";
 
   return (
     <>
@@ -29,102 +21,123 @@ export default function OBSPage() {
 
       <Container maxW="container.lg" py="var(--section-py)">
         <VStack gap={10} align="stretch">
-          {/* Header */}
-          <VStack gap={2} textAlign="center" maxW="600px" mx="auto">
-            <Heading as="h1" fontSize={{ base: "2xl", md: "4xl" }} fontFamily="heading" color="brand.ink">
-              Tip alerts on stream in{" "}
-              <Box as="span" className="gradient-text">2 minutes</Box>
+          <Box textAlign="center">
+            <Text fontFamily="heading" fontSize="sm" color="brand.inkSoft">"zine #1"</Text>
+            <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">a hand-drawn guide</Text>
+            <Heading as="h1" fontSize={{ base: "3xl", md: "5xl" }} fontFamily="heading" color="brand.ink" mt={2}>
+              wire up OBS
             </Heading>
-            <Text fontFamily="body" fontSize="md" color="brand.inkSoft" lineHeight="1.7">
-              Add real-time Solana tip notifications to your OBS stream using a single browser source URL.
+            <Text fontFamily="body" fontSize="md" color="brand.inkSoft" mt={2}>
+              four steps. takes about three minutes. no plugins, no installs — just one browser source URL.
             </Text>
-          </VStack>
+          </Box>
 
-          {/* Steps */}
-          <VStack gap={6} align="stretch">
+          <VStack gap={4} align="stretch">
             {[
               {
-                num: "01",
-                title: "Register your account",
-                desc: "Connect your Solana wallet and create a username. This gives you a unique tip page and overlay URL.",
-                icon: <FiSettings size={20} />,
+                num: "1",
+                title: "claim your handle",
+                desc: "pick a @handle (yours forever). pufftip generates a unique URL for your tip overlay.",
+                note: "→ keep this URL secret-ish. anyone with it can spoof tips on YOUR overlay.",
               },
               {
-                num: "02",
-                title: "Copy your overlay URL",
-                desc: "Your overlay URL is automatically generated. It follows this format:",
-                icon: <FiCopy size={20} />,
-                hasUrl: true,
+                num: "2",
+                title: "open OBS · add browser source",
+                desc: "in OBS, hit + on Sources → Browser. paste the URL. set width 800, height 600. transparent by default.",
               },
               {
-                num: "03",
-                title: "Add Browser Source in OBS",
-                desc: "In OBS Studio, add a new Browser Source. Paste your overlay URL, set width to 800 and height to 600. Make sure \"Shutdown source when not visible\" is unchecked.",
-                icon: <FiMonitor size={20} />,
+                num: "3",
+                title: "test it",
+                desc: "from your dashboard, hit 'send a fake tip'. it should appear on stream in under a second.",
               },
               {
-                num: "04",
-                title: "Go live & receive tips",
-                desc: "That's it. When someone sends you SOL through your tip page, the notification will appear on your stream with animations and sound alerts.",
-                icon: <FiZap size={20} />,
+                num: "4",
+                title: "go live, get tipped",
+                desc: "share your /u/handle URL anywhere — bio, panels, chat. tips land in the wallet you connected.",
               },
-            ].map((step, i) => (
-              <M key={step.num} className="glass-card" p={6} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 * i }}>
-                <HStack gap={4} alignItems="flex-start" flexWrap={{ base: "wrap", md: "nowrap" }}>
-                  <Box w={10} h={10} borderRadius="full" display="flex" alignItems="center" justifyContent="center" bg="brand.paperDeep" border="1.5px solid" borderColor="var(--theme-card-border)" flexShrink={0} color="brand.ink">
-                    {step.icon}
-                  </Box>
-                  <Box flex={1}>
-                    <HStack gap={3} mb={2}>
-                      <Text fontFamily="heading" fontSize="sm" fontWeight="700" className="gradient-text">{step.num}</Text>
-                      <Text fontFamily="heading" fontSize="lg" fontWeight="700" color="brand.ink">{step.title}</Text>
-                    </HStack>
-                    <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" lineHeight="1.7">{step.desc}</Text>
-                    {step.hasUrl && (
-                      <HStack mt={3} gap={2} flexWrap="wrap">
-                        <Box flex={1} minW="200px" bg="brand.paperDeep" border="1px solid" borderColor="var(--theme-card-border)" borderRadius="md" px={3} py={2}>
-                          <Text fontFamily="body" fontSize="sm" color="brand.ink" wordBreak="break-all">{sampleUrl}</Text>
-                        </Box>
-                        <Button onClick={handleCopy} size="sm" bg={copied ? "brand.markerGreen" : "brand.ink"} color="brand.paper" fontFamily="heading" borderRadius="md" _hover={{ opacity: 0.9 }}>
-                          <HStack gap={1}>{copied ? <FiCheck /> : <FiCopy />}<Text>{copied ? "Copied!" : "Copy"}</Text></HStack>
-                        </Button>
+            ].map((step) => (
+              <Box key={step.num} className="zine-step">
+                <Box className="zine-number">{step.num}</Box>
+                <Box>
+                  <Heading as="h3" size="sm" fontFamily="heading" color="brand.ink" mb={1}>{step.title}</Heading>
+                  <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" lineHeight="1.7">{step.desc}</Text>
+                  {step.note && (
+                    <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" mt={2}>{step.note}</Text>
+                  )}
+                  {step.num === "1" && (
+                    <Box className="zine-card" mt={3}>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft"># your overlay url</Text>
+                      <HStack justifyContent="space-between" mt={1}>
+                        <Text fontFamily="heading" fontSize="sm" color="brand.ink">{sampleUrl}</Text>
+                        <ButtonLikeCopy value={sampleUrl} />
                       </HStack>
-                    )}
-                  </Box>
-                </HStack>
-              </M>
+                    </Box>
+                  )}
+                  {step.num === "2" && (
+                    <Box className="zine-card" mt={3}>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">+ Browser Source</Text>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">URL: [paste]</Text>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">Width: 800</Text>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">Height: 600</Text>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">✓ Refresh on becoming active</Text>
+                    </Box>
+                  )}
+                  {step.num === "3" && (
+                    <Box className="paper-card" p={3} mt={3}>
+                      <Text fontFamily="heading" fontSize="xs" color="brand.ink">@cryptowhale · 2.5 SOL</Text>
+                      <Text fontFamily="heading" fontSize="sm" color="brand.ink">huge play! smoke break for u 🚬</Text>
+                    </Box>
+                  )}
+                  {step.num === "4" && (
+                    <Box className="zine-card" mt={3}>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">pufftip.com/u/yourhandle</Text>
+                      <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">share this. that&apos;s the page.</Text>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
             ))}
           </VStack>
 
-          {/* Features Grid */}
           <Box>
-            <Heading as="h2" fontSize={{ base: "xl", md: "2xl" }} fontFamily="heading" color="brand.ink" mb={4} textAlign="center">Overlay features</Heading>
-            <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", md: "repeat(4, 1fr)" }} gap={4}>
+            <Heading as="h2" size="md" fontFamily="heading" color="brand.ink" mb={3}>scribbles in the margin</Heading>
+            <VStack align="stretch" gap={3}>
               {[
-                { icon: "⚡", title: "Real-time", desc: "WebSocket powered — zero delay" },
-                { icon: "🔔", title: "Sound alerts", desc: "Audio notifications on each tip" },
-                { icon: "🎨", title: "Animated", desc: "Smooth entry/exit animations" },
-                { icon: "💬", title: "Messages", desc: "Shows donor name, amount & note" },
-              ].map((f, i) => (
-                <M key={f.title} className="glass-card" p={4} textAlign="center" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.05 * i }}>
-                  <Text fontSize="xl" mb={2}>{f.icon}</Text>
-                  <Text fontFamily="heading" fontSize="sm" fontWeight="700" color="brand.ink" mb={1}>{f.title}</Text>
-                  <Text fontFamily="body" fontSize="xs" color="brand.inkSoft">{f.desc}</Text>
-                </M>
+                { q: "do viewers need a wallet?", a: "yes — phantom or backpack. takes 30 seconds. they can also tip with apple pay (we onramp behind the scenes)." },
+                { q: "what&apos;s the fee?", a: "2%. that&apos;s it. see /pricing for the receipt." },
+                { q: "what about USDC?", a: "yep, USDC and USDT on solana too. we auto-swap if your viewer sends a different token." },
+                { q: "can i customize the overlay?", a: "absolutely — fonts, colors, animations, sounds. dashboard has a live editor." },
+              ].map((item) => (
+                <Box key={item.q} className="paper-card" p={4}>
+                  <Text fontFamily="heading" fontSize="sm" color="brand.ink">{item.q}</Text>
+                  <Text fontFamily="body" fontSize="sm" color="brand.inkSoft">{item.a}</Text>
+                </Box>
               ))}
-            </Grid>
+            </VStack>
           </Box>
 
-          {/* CTA */}
-          <Box className="glass-card" p={8} textAlign="center">
-            <Heading as="h3" fontSize="xl" fontFamily="heading" color="brand.ink" mb={2}>Ready to add tip alerts?</Heading>
-            <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" mb={4}>Register your account and start receiving SOL tips on stream.</Text>
-            <button className="premium-btn primary" onClick={() => window.location.href = "/register"}>
-              Create Your Account →
-            </button>
+          <Box className="paper-card" p={6} textAlign="center">
+            <Heading as="h3" size="sm" fontFamily="heading" color="brand.ink" mb={2}>stuck?</Heading>
+            <Text fontFamily="body" fontSize="sm" color="brand.inkSoft" mb={4}>we hang out in discord. drop in, we&apos;ll walk you through it.</Text>
+            <HStack justifyContent="center" gap={3} flexWrap="wrap">
+              <button className="premium-btn primary" onClick={() => window.location.href = "/explore"}>browse streamers instead</button>
+              <button className="premium-btn secondary" onClick={() => window.location.href = "/register"}>claim your handle →</button>
+            </HStack>
           </Box>
         </VStack>
       </Container>
     </>
+  );
+}
+
+function ButtonLikeCopy({ value }: { value: string }) {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value);
+  };
+
+  return (
+    <button className="premium-btn secondary" style={{ padding: "6px 12px", fontSize: "12px" }} onClick={handleCopy}>
+      <FiCopy size={14} /> copy
+    </button>
   );
 }

@@ -14,7 +14,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTheme } from "@/components/ThemeProvider";
-import { FiMenu, FiX, FiHome, FiSearch, FiMonitor, FiLayout, FiUsers, FiPlay } from "react-icons/fi";
+import { FiMenu, FiX, FiHome, FiSearch, FiMonitor, FiLayout, FiDollarSign } from "react-icons/fi";
 
 const WalletMultiButton = dynamic(
   () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
@@ -28,9 +28,9 @@ interface LayoutProps {
 const NAV_LINKS = [
   { label: "home", href: "/", icon: <FiHome size={16} /> },
   { label: "explore", href: "/explore", icon: <FiSearch size={16} /> },
-  { label: "for creators", href: "/for-creators", icon: <FiUsers size={16} /> },
-  { label: "demos", href: "/demos", icon: <FiPlay size={16} /> },
   { label: "dashboard", href: "/dashboard", icon: <FiLayout size={16} /> },
+  { label: "obs setup", href: "/obs", icon: <FiMonitor size={16} /> },
+  { label: "fees", href: "/pricing", icon: <FiDollarSign size={16} /> },
 ];
 
 function Navbar() {
@@ -56,9 +56,17 @@ function Navbar() {
           <HStack justifyContent="space-between" alignItems="center">
             {/* Logo */}
             <Link href="/" style={{ textDecoration: "none" }}>
-              <Text fontSize="xl" fontFamily="heading" fontWeight="700" color="brand.ink" position="relative">
-                pufftip<Box as="span" className="solana-gradient">.</Box>
-              </Text>
+              <HStack gap={3} className="brand-logo">
+                <Box className="brand-badge">P</Box>
+                <Box>
+                  <Text fontSize="lg" fontFamily="heading" fontWeight="700" color="brand.ink" lineHeight="1">
+                    pufftip
+                  </Text>
+                  <Text fontSize="xs" fontFamily="body" color="brand.inkSoft" lineHeight="1">
+                    a tip / a smoke
+                  </Text>
+                </Box>
+              </HStack>
             </Link>
 
             {/* Desktop Nav */}
@@ -105,6 +113,10 @@ function Navbar() {
               >
                 {theme === "notebook" ? "✨ studio" : "✎ notebook"}
               </Button>
+              <Box className="demo-pill hide-mobile">
+                <Text className="demo-pill-amount">5.00 SOL</Text>
+                <Text className="demo-pill-label">demo</Text>
+              </Box>
               <WalletMultiButton />
 
               {/* Mobile hamburger */}
@@ -130,9 +142,17 @@ function Navbar() {
         <VStack align="stretch" py={4} gap={0}>
           {/* Close button */}
           <HStack justifyContent="space-between" px={5} mb={4}>
-            <Text fontFamily="heading" fontWeight="700" color="brand.ink" fontSize="lg">
-              pufftip<Box as="span" className="solana-gradient">.</Box>
-            </Text>
+            <HStack gap={2}>
+              <Box className="brand-badge">P</Box>
+              <Box>
+                <Text fontFamily="heading" fontWeight="700" color="brand.ink" fontSize="lg" lineHeight="1">
+                  pufftip
+                </Text>
+                <Text fontFamily="body" fontSize="xs" color="brand.inkSoft" lineHeight="1">
+                  a tip / a smoke
+                </Text>
+              </Box>
+            </HStack>
             <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(false)} color="brand.ink" p={1} minW="auto">
               <FiX size={20} />
             </Button>
@@ -169,6 +189,12 @@ function Navbar() {
               {theme === "notebook" ? "✨ switch to studio" : "✎ switch to notebook"}
             </Button>
           </Box>
+          <Box px={5} mt={3}>
+            <Box className="demo-pill" style={{ justifyContent: "center" }}>
+              <Text className="demo-pill-amount">5.00 SOL</Text>
+              <Text className="demo-pill-label">demo</Text>
+            </Box>
+          </Box>
         </VStack>
       </Box>
     </>
@@ -179,25 +205,25 @@ function Footer() {
   return (
     <Box as="footer" className="site-footer" py={12} px={4} mt={10}>
       <Container maxW="container.xl">
-        <Grid templateColumns={{ base: "1fr 1fr", md: "2fr 1fr 1fr 1fr" }} gap={{ base: 6, md: 12 }}>
-          <GridItem colSpan={{ base: 2, md: 1 }}>
-            <Text fontFamily="heading" fontSize="xl" fontWeight="700" color="brand.ink" mb={3}>
-              pufftip<Box as="span" className="solana-gradient">.</Box>
-            </Text>
+        <Grid templateColumns={{ base: "1fr", md: "1.5fr 1fr 1fr" }} gap={{ base: 6, md: 12 }}>
+          <GridItem>
+            <HStack gap={2} mb={3}>
+              <Box className="brand-badge">P</Box>
+              <Text fontFamily="heading" fontSize="xl" fontWeight="700" color="brand.ink">pufftip</Text>
+            </HStack>
             <Text color="brand.inkSoft" fontSize="sm" fontFamily="body" maxW="300px" lineHeight="1.7">
-              the next-gen Solana tipping platform for creators. instant payments, real-time OBS alerts, zero middlemen.
+              crypto tips for streamers — every tip arrives with a smoke on the house. built by night-owls, for night-owls.
             </Text>
           </GridItem>
 
           <GridItem>
-            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Product</Text>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">explore</Text>
             <VStack alignItems="flex-start" gap={2}>
               {[
-                { label: "for streamers", href: "/for-streamers" },
-                { label: "for creators", href: "/for-creators" },
-                { label: "features", href: "/features" },
-                { label: "demos", href: "/demos" },
-                { label: "pricing", href: "/pricing" },
+                { label: "streamers", href: "/explore" },
+                { label: "dashboard preview", href: "/dashboard" },
+                { label: "obs setup", href: "/obs" },
+                { label: "fees", href: "/pricing" },
               ].map((link) => (
                 <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
               ))}
@@ -205,46 +231,21 @@ function Footer() {
           </GridItem>
 
           <GridItem>
-            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Resources</Text>
-            <VStack alignItems="flex-start" gap={2}>
-              {[
-                { label: "explore creators", href: "/explore" },
-                { label: "obs setup guide", href: "/obs" },
-                { label: "dashboard", href: "/dashboard" },
-                { label: "faq & help", href: "/faq" },
-                { label: "about pufftip", href: "/about" },
-              ].map((link) => (
-                <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
-              ))}
-            </VStack>
-          </GridItem>
-
-          <GridItem>
-            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">Showcase</Text>
-            <VStack alignItems="flex-start" gap={2}>
-              {[
-                { label: "🎸 smokey jazz", href: "/showcase/smokeyjazz" },
-                { label: "🎨 pixel artist", href: "/showcase/pixelartist" },
-                { label: "💻 code streamer", href: "/showcase/codingstreamer" },
-              ].map((link) => (
-                <Link key={link.href} href={link.href} className="footer-link">{link.label}</Link>
-              ))}
-              <Box px={3} py={1} border="1px solid" borderColor="brand.inkSoft" borderRadius="md" mt={2}>
-                <Text fontSize="xs" color="brand.ink" fontFamily="body" fontWeight="700">Devnet</Text>
-              </Box>
-            </VStack>
+            <Text fontFamily="heading" fontSize="xs" fontWeight="700" color="brand.ink" mb={3} textTransform="uppercase" letterSpacing="wider">notes</Text>
+            <Text color="brand.inkSoft" fontSize="sm" fontFamily="body" lineHeight="1.7">
+              built on solana. no signups required to browse. demo mode means no real money moves until you connect a real wallet.
+            </Text>
           </GridItem>
         </Grid>
 
         <Box mt={10} pt={6} borderTop="1px solid" borderColor="var(--theme-card-border)">
           <HStack justifyContent="space-between" flexWrap="wrap" gap={4}>
             <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">
-              © 2026 PuffTip. built with <Box as="span" className="solana-gradient">Solana</Box>.
+              © 2026 pufftip — drawn by hand, mostly. *
             </Text>
             <HStack gap={4}>
               <Link href="/faq" className="footer-link" style={{ fontSize: "12px" }}>FAQ</Link>
               <Link href="/about" className="footer-link" style={{ fontSize: "12px" }}>About</Link>
-              <Text fontSize="xs" color="brand.inkSoft" fontFamily="body">devnet — no real money.</Text>
             </HStack>
           </HStack>
         </Box>
@@ -275,6 +276,19 @@ export default function Layout({ children }: LayoutProps) {
         </Box>
         <Footer />
       </Box>
+
+      <Box className="corner-hint hide-mobile">
+        <Text>psst — hit Cmd+K to jump anywhere.</Text>
+        <HStack gap={2}>
+          <button className="corner-hint-btn">another →</button>
+          <button className="corner-hint-btn">explore</button>
+        </HStack>
+      </Box>
+
+      <button className="mascot-btn" aria-label="puffy the mascot">
+        <span>💨</span>
+        <span>👻</span>
+      </button>
     </Box>
   );
 }

@@ -16,15 +16,15 @@ const FAQ_SECTIONS = [
       { q: "What is PuffTip?", a: "PuffTip is a Solana-powered tipping platform for creators and streamers. Supporters can send tips in SOL that arrive in your wallet instantly — no middlemen, no holding periods. You get a custom creator page, real-time OBS overlay, donor leaderboard, and tip wall." },
       { q: "Do I need a Solana wallet?", a: "Yes. Both creators and tippers need a Solana wallet. We support all major Solana wallets including Phantom, Solflare, and Backpack. If you don't have one, Phantom is the easiest to set up — just install the browser extension and create an account." },
       { q: "How do I register?", a: "Click 'Create Your Page', connect your Solana wallet, and fill in a username, display name, and bio. That's it — your custom tip page is live immediately at pufftip.com/u/yourname." },
-      { q: "Is PuffTip free to use?", a: "Yes! There's no subscription or setup fee. PuffTip takes a small 5% platform fee on each tip. 95% of every tip goes directly to the creator's wallet." },
+      { q: "Is PuffTip free to use?", a: "Yes! There's no subscription or setup fee. PuffTip takes a small 2% platform fee on each tip. 98% of every tip goes directly to the creator's wallet." },
     ],
   },
   {
     title: "Fees & Payments",
     items: [
-      { q: "What fees does PuffTip charge?", a: "PuffTip charges a 5% platform fee on each tip. For example, if someone tips 1 SOL, you receive 0.95 SOL. The Solana network fee is less than $0.001 per transaction — essentially free." },
+      { q: "What fees does PuffTip charge?", a: "PuffTip charges a 2% platform fee on each tip. For example, if someone tips 1 SOL, you receive 0.98 SOL. The Solana network fee is less than $0.001 per transaction — essentially free." },
       { q: "How fast are payments?", a: "Instant. Every tip is a direct Solana transaction that settles in under 1 second. There's no holding period, no minimum payout, and no withdrawal process. SOL goes straight to your wallet." },
-      { q: "How does PuffTip compare to other platforms?", a: "Traditional tipping platforms (like Streamlabs, Ko-fi) take 30-50% in fees and hold your money for 7-30 days. Ethereum-based tips have $2-50+ gas fees. PuffTip: 5% fee, <1 second settlement, <$0.001 per transaction." },
+      { q: "How does PuffTip compare to other platforms?", a: "Traditional tipping platforms (like Streamlabs, Ko-fi) take 30-50% in fees and hold your money for 7-30 days. Ethereum-based tips have $2-50+ gas fees. PuffTip: 2% fee, <1 second settlement, <$0.001 per transaction." },
     ],
   },
   {
